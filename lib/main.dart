@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'data/models/senhas.dart';
 
 void main(){
   runApp(MaterialApp(home: Home(), debugShowCheckedModeBanner: false,));

@@ -3,6 +3,7 @@ import 'package:local_auth/local_auth.dart';
 class BiometricServices {
   static final LocalAuthentication _auth = LocalAuthentication();
   
+  // funcao que verifica se tem biometria, e se tiver, exige-a
   static Future<bool> checkBiometric() async{
     final List<BiometricType> availableBiometrics = await _auth.getAvailableBiometrics();
     
