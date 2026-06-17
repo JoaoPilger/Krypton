@@ -1,10 +1,14 @@
 import 'package:flutter/foundation.dart';
+import 'dart:convert';
 import '../database/db.dart';
 import '../models/user.dart';
-import '../../services/keystore_services.dart';
+import 'dart:math';
+import 'package:cryptography/cryptography.dart';
+import '../../services/extra_services.dart';
+import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserController {
-
   // Cadastro: gera as chaves, abre o banco e insere o usuário
   static Future<bool> cadastrar({
     required String nome,
@@ -18,7 +22,7 @@ class UserController {
 
     try {
       // Gera DB_Key, blobs, salts e abre o banco (DbService.init é chamado internamente)
-      await KeystoreService.registerDbKey(senhaMestre, email);
+      await registerDbKey(senhaMestre, email);
 
       final db   = DbService.db;
       final user = User(nome: nome, email: email);
@@ -46,4 +50,66 @@ class UserController {
       return null;
     }
   }
+}
+
+// funcao de criar e salvar senha do DB
+Future<void> registerDbKey(String senhaMestre, String email) async{
+  const dbKeyAlias = 'db_key';
+  const storage = FlutterSecureStorage();
+
+
+  try {
+      // cria a senha do DB como string e como lista de 32 bytes
+    final String dbKey;
+    final dbKeyBytes = List<int>.generate(32, (_) => Random.secure().nextInt(256));
+    dbKey = base64UrlEncode(dbKeyBytes);
+
+    final String dbKeyRecup;
+    final dbKeyRecupBytes = List<int>.generate(32, (_) => Random.secure().nextInt(256));
+    dbKeyRecup = base64UrlEncode(dbKeyRecupBytes);
+      
+    await DbService.init(dbKey);
+
+    // Salva na Kestore do celular para desbloquear por biometria
+    await storage.write(key: dbKeyAlias, value: dbKey);
+
+      // códigos para criptografar as senhas de acesso
+    final salt1 = List<int>.generate(16, (_) => Random.secure().nextInt(256));
+    final salt2 = List<int>.generate(16, (_) => Random.secure().nextInt(256));
+      
+    // senhas derivadas e criptografadas com argon2
+    final k1Bytes = await derivate(senhaMestre, salt1);
+    final k2Bytes = await derivate(dbKeyRecup, salt2);
+
+    // transforma os Ks de Byte para SecretKey, para encaixar no encrypt do AES
+    final k1 = SecretKey(k1Bytes);
+    final k2 = SecretKey(k2Bytes);
+
+    // criptografia com AES-GCM
+    final aes = AesGcm.with256bits();
+
+    final blob1 = await aes.encrypt(dbKeyBytes, secretKey: k1);
+    final blob2 = await aes.encrypt(dbKeyRecupBytes, secretKey: k2);
+
+    // salvando blobs e salts no shared_preferences
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('blob1_cipher', base64Encode(blob1.cipherText));
+    await prefs.setString('blob1_mac',    base64Encode(blob1.mac.bytes));
+    await prefs.setString('blob1_nonce',  base64Encode(blob1.nonce));
+
+    await prefs.setString('blob2_cipher', base64Encode(blob2.cipherText));
+    await prefs.setString('blob2_mac',    base64Encode(blob2.mac.bytes));
+    await prefs.setString('blob2_nonce',  base64Encode(blob2.nonce));
+      
+    await prefs.setString('salt1', base64Encode(salt1));
+    await prefs.setString('salt2', base64Encode(salt2));
+
+    // envia senha de recuperacao para o email registrado
+    sendEmail(dbKeyRecup, email);
+      
+  } catch (e) {
+    debugPrint(e.toString());
+  }
+    
 }
