@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'views/login_view.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: Home(),
+  runApp(const MaterialApp(
+    home: LoginView(),
     debugShowCheckedModeBanner: false,
   ));
 }
