@@ -15,8 +15,7 @@ class DbService {
         await db.execute('''
           CREATE TABLE users (
             id    INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome  TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE
+            nome  TEXT NOT NULL
           );
         ''');
         await db.execute('''

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/DAO/userContoller.dart';
 
 // Tela de Cadastro do Krypton
 class RegisterView extends StatefulWidget {
@@ -160,9 +161,7 @@ class _RegisterViewState extends State<RegisterView> {
                   // Se _acceptedTerms é true, o botão funciona. Se false, fica desabilitado
                   onPressed: _acceptedTerms
                       ? () {
-                          // Aqui vai a lógica para cadastrar o usuário
-                          print('Nome: ${_nameController.text}');
-                          print('Senha: ${_passwordController.text}');
+                          UserController.cadastrar(nome: _nameController.text, senhaMestre: _passwordController.text);
                         }
                       : null, // null desabilita o botão
                   style: FilledButton.styleFrom(
@@ -206,15 +205,6 @@ class _RegisterViewState extends State<RegisterView> {
               ),
 
               const SizedBox(height: 40),
-
-              // Ícone de biometria
-              const Icon(
-                Icons.fingerprint,
-                size: 100,
-                color: kryptonPurple,
-              ),
-
-              const SizedBox(height: 30),
 
               // Rodapé
               const Text(

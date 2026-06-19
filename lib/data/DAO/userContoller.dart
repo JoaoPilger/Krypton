@@ -10,25 +10,26 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserController {
   // Cadastro: gera as chaves, abre o banco e insere o usuário
+  
   static Future<bool> cadastrar({
     required String nome,
-    required String email,
     required String senhaMestre,
   }) async {
-    if (nome.trim().isEmpty || email.trim().isEmpty || senhaMestre.isEmpty) {
+    if (nome.trim().isEmpty || senhaMestre.isEmpty) {
       debugPrint('Campos obrigatórios não preenchidos.');
       return false;
     }
 
     try {
       // Gera DB_Key, blobs, salts e abre o banco (DbService.init é chamado internamente)
-      await registerDbKey(senhaMestre, email);
+      await registerDbKey(senhaMestre);
 
       final db   = DbService.db;
-      final user = User(nome: nome, email: email);
+      final user = User(nome: nome);
 
       final id = await db.insert('users', user.toMap()..remove('id'));
       debugPrint('Usuário criado com id: $id');
+      
       return true;
 
     } catch (e) {
@@ -53,10 +54,9 @@ class UserController {
 }
 
 // funcao de criar e salvar senha do DB
-Future<void> registerDbKey(String senhaMestre, String email) async{
+Future<void> registerDbKey(String senhaMestre) async{
   const dbKeyAlias = 'db_key';
   const storage = FlutterSecureStorage();
-
 
   try {
       // cria a senha do DB como string e como lista de 32 bytes
@@ -104,9 +104,6 @@ Future<void> registerDbKey(String senhaMestre, String email) async{
       
     await prefs.setString('salt1', base64Encode(salt1));
     await prefs.setString('salt2', base64Encode(salt2));
-
-    // envia senha de recuperacao para o email registrado
-    sendEmail(dbKeyRecup, email);
       
   } catch (e) {
     debugPrint(e.toString());

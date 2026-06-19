@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:cryptography/cryptography.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 // funcao para derivar chaves
 Future<List<int>> derivate(String input, List<int> salt) async{
@@ -17,18 +16,4 @@ Future<List<int>> derivate(String input, List<int> salt) async{
   );
 
   return await secretKey.extractBytes();
-}
-
-// funcao para enviar email para si mesmo
-void sendEmail(String dbKeyRecup, String email){
-  final Uri emailLauncher = Uri(
-    scheme: 'mailto',
-    path: email,
-    queryParameters: {
-      'subject': 'Senha de recuperação Krypton',
-      'body': dbKeyRecup
-    }
-  );
-
-  launchUrl(emailLauncher);
 }

@@ -57,9 +57,10 @@ class KeystoreService {
       );
 
       final List<int> dbKeyByte = await aes.decrypt(blob1, secretKey: k1);
-      final String dbKey = base64Encode(dbKeyByte);
+      final String dbKey = base64UrlEncode(dbKeyByte);
 
       await DbService.init(dbKey);
+      debugPrint('Senha mestre.');
       return true;
 
     } catch(e) {
@@ -77,9 +78,10 @@ class KeystoreService {
         );
 
         final List<int> dbKeyByte = await aes.decrypt(blob1, secretKey: k2);
-        final String dbKey = base64Encode(dbKeyByte);
+        final String dbKey = base64UrlEncode(dbKeyByte);
 
         await DbService.init(dbKey);
+        debugPrint('Senha de recuperacao.');
         return true;
         
       } else{

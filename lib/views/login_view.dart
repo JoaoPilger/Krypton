@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'register_view.dart';
+import '../data/DAO/authController.dart';
 
 // Tela de Login do Krypton
 class LoginView extends StatefulWidget {
@@ -92,8 +93,7 @@ class _LoginViewState extends State<LoginView> {
                 height: 50,
                 child: FilledButton(
                   onPressed: () {
-                    // Aqui vai a lógica para fazer login
-                    print('Senha: ${_passwordController.text}');
+                    KeystoreService.loginPIN(_passwordController.text);
                   },
                   style: FilledButton.styleFrom(
                     backgroundColor: kryptonPurple,
