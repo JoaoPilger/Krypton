@@ -27,6 +27,7 @@ class DbService {
             cipherText TEXT    NOT NULL,
             authTag    TEXT    NOT NULL,
             IV         TEXT    NOT NULL UNIQUE,
+            tipo       TEXT    NOT NULL,
             FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
           );
         ''');

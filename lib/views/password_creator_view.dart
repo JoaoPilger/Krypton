@@ -1,5 +1,10 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:krypton/data/dao/senhaController.dart';
+import 'password_generator_view.dart';
 
 class CriarSenhaView extends StatefulWidget {
   const CriarSenhaView({super.key});
@@ -9,40 +14,47 @@ class CriarSenhaView extends StatefulWidget {
 }
 
 class _CriarSenhaViewState extends State<CriarSenhaView> {
-  final TextEditingController _usuarioController = TextEditingController(
-    text: 'Lucas@gmail.com',
-  );
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final TextEditingController _senhaController = TextEditingController(
-    text: 'SenhaForte123!',
-  );
+  String _categoriaSelecionada = 'Redes Sociais';
+  final List<String> _categorias = ['Redes Sociais', 'Bancos', 'Trabalhos', 'Outros'];
 
-  final TextEditingController _urlController = TextEditingController(
-    text: 'google.com',
-  );
+  final TextEditingController _usuarioController = TextEditingController(text: '');
+  final TextEditingController _senhaController = TextEditingController(text: '');
+  final TextEditingController _urlController = TextEditingController(text: '');
 
   bool _ocultarSenha = true;
-  double _progressoSenha = 0.8;
-  String _textoForca = 'Forte';
-  Color _corForca = const Color(0xFF689F38);
+  double _progressoSenha = 0.0;
+  String _textoForca = 'Vazia';
+  Color _corForca = Colors.grey;
+
+  File? _imagemCapa;
+  int constLogadoUserID = 1;
 
   @override
   void initState() {
     super.initState();
-
     _avaliarSenha(_senhaController.text);
-
     _senhaController.addListener(() {
       _avaliarSenha(_senhaController.text);
     });
   }
 
-  void _copyToClipboard() {
-    Clipboard.setData(ClipboardData(text: _senhaController.text));
+  void _copiarParaAreaTransferencia(String texto, String campo) {
+    if (texto.isEmpty) return;
+    Clipboard.setData(ClipboardData(text: texto));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$campo copiado com sucesso!'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Senha copiada!')));
+  Future<void> _selecionarImagem() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Função de clique da imagem acionada!')),
+    );
   }
 
   void _avaliarSenha(String senha) {
@@ -56,7 +68,6 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
     }
 
     double pontos = 0.0;
-
     if (senha.length >= 6) pontos += 0.25;
     if (senha.length >= 10) pontos += 0.25;
     if (senha.contains(RegExp(r'[A-Z]'))) pontos += 0.25;
@@ -78,6 +89,41 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
     });
   }
 
+  Future<void> _submeterSalvar() async {
+    if (_usuarioController.text.trim().isEmpty || _senhaController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, preencha o Usuário e a Senha.')),
+      );
+      return;
+    }
+
+    const storage = FlutterSecureStorage();
+    final chaveExiste = await storage.read(key: 'db_key');
+    if (chaveExiste == null) {
+      final chaveMockada = base64Encode(List<int>.generate(32, (i) => i));
+      await storage.write(key: 'db_key', value: chaveMockada);
+    }
+
+    bool sucesso = await SenhaController.salvar(
+      userID: constLogadoUserID,
+      titulo: _categoriaSelecionada,
+      usuario: _usuarioController.text.trim(),
+      senhaPlain: _senhaController.text,
+      tipo: 'Senha',
+    );
+
+    if (sucesso && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Senha salva com segurança!')),
+      );
+      Navigator.pop(context, true);
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao salvar no banco. Verifique seus dados.')),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _usuarioController.dispose();
@@ -89,28 +135,144 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
   @override
   Widget build(BuildContext context) {
     const colorPrimary = Color(0xFF333383);
-    const colorLabel = Color(0xFF666666);
-
-    final inputBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: colorPrimary, width: 1.5),
-    );
+    const colorBackgroundBox = Color.fromARGB(255, 216, 216, 224);
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: colorPrimary, size: 30),
-          onPressed: () {},
-        ),
+        iconTheme: const IconThemeData(size: 32),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: Image.asset('lib/images/logo.png', height: 40),
+            child: Image.asset(
+              'lib/images/logo.png',
+              height: 45,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => const SizedBox(),
+            ),
           ),
         ],
+      ),
+      drawer: Drawer(
+        backgroundColor: const Color.fromARGB(255, 216, 216, 224),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(16, 40, 16, 20),
+                    color: const Color.fromARGB(255, 216, 216, 224),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            'lib/images/logo.png',
+                            height: 80,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.lock, size: 50),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const PasswordGeneratorView()),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 60, 52, 137),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: const Text(
+                              'Gerar Senha',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.language),
+                    title: const Text('Todos os itens'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.star),
+                    title: const Text('Favoritos'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.lock),
+                    title: const Text('Senhas'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text(
+                      'Categorias',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 60, 52, 137),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.people),
+                    title: const Text('Redes Sociais'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.account_balance),
+                    title: const Text('Bancos'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.work),
+                    title: const Text('Trabalhos'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(color: Color.fromARGB(40, 0, 0, 0), height: 1),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Configurações'),
+              iconColor: const Color.fromARGB(255, 102, 100, 117),
+              textColor: const Color.fromARGB(255, 102, 100, 117),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -121,136 +283,211 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
                 child: ListView(
                   children: [
                     const SizedBox(height: 24),
-
-                    const Text('Usuário / Email'),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _usuarioController,
-                      decoration: InputDecoration(
-                        enabledBorder: inputBorder,
-                        focusedBorder: inputBorder,
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.copy),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    const Text('Senha'),
-                    const SizedBox(height: 8),
-
-                    TextFormField(
-                      controller: _senhaController,
-                      obscureText: _ocultarSenha,
-                      decoration: InputDecoration(
-                        enabledBorder: inputBorder,
-                        focusedBorder: inputBorder,
-                        suffixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                _ocultarSenha
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
-                                color: colorPrimary,
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 500),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Categoria / Serviço',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
+                          ),
+                          const SizedBox(height: 6),
+                          DropdownButtonFormField<String>(
+                            value: _categoriaSelecionada,
+                            dropdownColor: Colors.white,
+                            style: const TextStyle(color: Colors.black87, fontSize: 16),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: colorBackgroundBox,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide.none,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _ocultarSenha = !_ocultarSenha;
-                                });
-                              },
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.copy_all_outlined),
-                              onPressed: _copyToClipboard,
+                            items: _categorias.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                _categoriaSelecionada = newValue!;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Usuário / Email',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
+                          ),
+                          const SizedBox(height: 6),
+                          TextFormField(
+                            controller: _usuarioController,
+                            style: const TextStyle(color: Colors.black87),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: colorBackgroundBox,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: SizedBox(
+                                width: 40,
+                                child: IconButton(
+                                  icon: const Icon(Icons.copy, size: 20, color: colorPrimary),
+                                  onPressed: () {
+                                    _copiarParaAreaTransferencia(_usuarioController.text, 'Usuário/Email');
+                                  },
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Senha',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
+                          ),
+                          const SizedBox(height: 6),
+                          TextFormField(
+                            controller: _senhaController,
+                            obscureText: _ocultarSenha,
+                            style: const TextStyle(color: Colors.black87),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: colorBackgroundBox,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: SizedBox(
+                                width: 80,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(
+                                        _ocultarSenha ? Icons.visibility : Icons.visibility_off,
+                                        size: 20,
+                                        color: const Color(0xFF666475),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _ocultarSenha = !_ocultarSenha;
+                                        });
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.copy, size: 20, color: colorPrimary),
+                                      onPressed: () {
+                                        _copiarParaAreaTransferencia(_senhaController.text, 'Senha');
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Text(
+                                _textoForca,
+                                style: TextStyle(fontSize: 12, color: _corForca, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: LinearProgressIndicator(
+                                  value: _progressoSenha,
+                                  backgroundColor: Colors.grey[300],
+                                  color: _corForca,
+                                  minHeight: 6,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'URL',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
+                          ),
+                          const SizedBox(height: 6),
+                          TextFormField(
+                            controller: _urlController,
+                            style: const TextStyle(color: Colors.black87),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: colorBackgroundBox,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon: const Icon(Icons.open_in_new, color: colorPrimary),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          const Text(
+                            'IMAGEM DE CAPA',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
+                          ),
+                          const SizedBox(height: 6),
+                          GestureDetector(
+                            onTap: _selecionarImagem,
+                            child: Container(
+                              height: 120,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE0E0E6),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFF9999A5)),
+                              ),
+                              child: _imagemCapa != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(11),
+                                      child: Image.file(
+                                        _imagemCapa!,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : const Center(
+                                      child: Icon(Icons.add, size: 40, color: colorPrimary),
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                        ],
                       ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE8F5E9),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            _textoForca,
-                            style: TextStyle(color: _corForca),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: LinearProgressIndicator(
-                            value: _progressoSenha,
-                            valueColor: AlwaysStoppedAnimation(_corForca),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    const Text('Url'),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _urlController,
-                      decoration: InputDecoration(
-                        enabledBorder: inputBorder,
-                        focusedBorder: inputBorder,
-                        suffixIcon: const Icon(Icons.open_in_new),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    const Text('IMAGEM DE CAPA'),
-                    const SizedBox(height: 8),
-                    Container(
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0E0E6),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF9999A5)),
-                      ),
-                      child: const Center(child: Icon(Icons.add, size: 40)),
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 16),
-
               SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _submeterSalvar,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
                   child: const Text(
                     'Criar senha',
-                    style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
               const SizedBox(height: 10),
-
-              const Text(
-                'Todos os direitos reservados',
-                style: TextStyle(color: Colors.grey, fontSize: 11),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  'Todos os direitos reservados',
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
               ),
             ],
           ),

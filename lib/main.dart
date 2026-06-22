@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
-import 'views/login_view.dart';
-import 'views/editar_senhas.dart';
 import 'views/password_generator_view.dart';
+import 'views/password_creator_view.dart';
+import 'views/editar_senhas.dart';
+import 'package:krypton/data/dao/senhaController.dart';
 
 void main() {
-  runApp(const MaterialApp(home: LoginView(), debugShowCheckedModeBanner: false));
+  runApp(const MaterialApp(home: Home(), debugShowCheckedModeBanner: false));
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  int constLogadoUserID = 1;
+
+  void _atualizarLista() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +35,12 @@ class Home extends StatelessWidget {
               'lib/images/logo.png',
               height: 45,
               fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => const SizedBox(),
             ),
           ),
         ],
       ),
-      drawer: Drawer( // Novo widget
+      drawer: Drawer(
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         child: Column(
           children: [
@@ -47,6 +60,7 @@ class Home extends StatelessWidget {
                             'lib/images/logo.png',
                             height: 80,
                             fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.lock, size: 50),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -55,10 +69,10 @@ class Home extends StatelessWidget {
                           height: 48,
                           child: ElevatedButton(
                             onPressed: () {
-                              if (!context.mounted) return;
-                                Navigator.push(
-                                  context, 
-                                  MaterialPageRoute(builder: (context) => const PasswordGeneratorView())
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context, 
+                                MaterialPageRoute(builder: (context) => const PasswordGeneratorView())
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -70,10 +84,7 @@ class Home extends StatelessWidget {
                             ),
                             child: const Text(
                               'Gerar Senha',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -87,6 +98,7 @@ class Home extends StatelessWidget {
                     textColor: const Color.fromARGB(255, 102, 100, 117),
                     onTap: () {
                       Navigator.pop(context);
+                      _atualizarLista();
                     },
                   ),
                   ListTile(
@@ -94,18 +106,14 @@ class Home extends StatelessWidget {
                     title: const Text('Favoritos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                   ListTile(
                     leading: const Icon(Icons.lock),
                     title: const Text('Senhas'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -123,27 +131,21 @@ class Home extends StatelessWidget {
                     title: const Text('Redes Sociais'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                   ListTile(
                     leading: const Icon(Icons.account_balance),
                     title: const Text('Bancos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                   ListTile(
                     leading: const Icon(Icons.work),
                     title: const Text('Trabalhos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                 ],
               ),
@@ -154,9 +156,7 @@ class Home extends StatelessWidget {
               title: const Text('Configurações'),
               iconColor: const Color.fromARGB(255, 102, 100, 117),
               textColor: const Color.fromARGB(255, 102, 100, 117),
-              onTap: () {
-                Navigator.pop(context);
-              },
+              onTap: () => Navigator.pop(context),
             ),
           ],
         ),
@@ -164,73 +164,94 @@ class Home extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: ListView(
+            child: Padding(
               padding: const EdgeInsets.all(16.0),
-              children: [
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Buscar Senhas',
-                    hintStyle: const TextStyle(color: Color(0xFF666475)),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: Color.fromARGB(255, 60, 52, 137),
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 216, 216, 224),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Card(
-                  elevation: 2,
-                  color: const Color.fromARGB(255, 240, 240, 245),
-                  child: ListTile(
-                    leading: Image.asset(
-                      'lib/images/logo_google.png',
-                      height: 32,
-                      width: 32,
-                      fit: BoxFit.contain,
-                    ),
-                    title: const Text(
-                      'Google',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: const Text('lucas@gmail.com'),
-                    onTap: () {
-                      if (!context.mounted) return;
-                          Navigator.push(
-                          context, 
-                          MaterialPageRoute(builder: (context) => const EditarSenhaView())
-                        );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 60, 52, 137),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
+              child: Column(
+                children: [
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Buscar Senhas',
+                      hintStyle: const TextStyle(color: Color(0xFF666475)),
+                      prefixIcon: const Icon(Icons.search, color: Color.fromARGB(255, 60, 52, 137)),
+                      filled: true,
+                      fillColor: const Color.fromARGB(255, 216, 216, 224),
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'Nova senha',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        borderSide: BorderSide.none,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: FutureBuilder<List<Map<String, dynamic>>>(
+                      future: SenhaController.buscarTodas(constLogadoUserID),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const Center(child: Text('Nenhuma senha cadastrada.'));
+                        }
+
+                        final listaSenhas = snapshot.data!;
+
+                        return ListView.builder(
+                          itemCount: listaSenhas.length,
+                          itemBuilder: (context, index) {
+                            final item = listaSenhas[index];
+                            return Card(
+                              elevation: 2,
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              color: const Color.fromARGB(255, 240, 240, 245),
+                              child: ListTile(
+                                leading: const Icon(Icons.vpn_key, color: Color(0xFF333383)),
+                                title: Text(
+                                  item['titulo'] ?? 'Sem categoria',
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Text(item['usuario'] ?? ''),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const EditarSenhaView()),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final resultado = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CriarSenhaView()),
+                        );
+                        if (resultado == true) {
+                          _atualizarLista();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 60, 52, 137),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'Nova senha',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const Padding(

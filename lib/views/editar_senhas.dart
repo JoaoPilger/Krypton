@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'password_generator_view.dart';
 
 class EditarSenhaView extends StatefulWidget {
   const EditarSenhaView({super.key});
@@ -61,9 +63,46 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
     });
   }
 
+  void _confirmarExclusao() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Exclusão'),
+          content: const Text('Tem certeza que deseja excluir esta senha?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _copiarParaAreaTransferencia(String texto, String campo) {
+    Clipboard.setData(ClipboardData(text: texto));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$campo copiado com sucesso!'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   void dispose() {
+    _usuarioController.dispose();
     _senhaController.dispose();
+    _urlController.dispose();
     super.dispose();
   }
 
@@ -85,6 +124,140 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
             ),
           ),
         ],
+      ),
+      drawer: Drawer( // Novo widget
+        backgroundColor: const Color.fromARGB(255, 216, 216, 224),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(16, 40, 16, 20),
+                    color: const Color.fromARGB(255, 216, 216, 224),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            'lib/images/logo.png',
+                            height: 80,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (!context.mounted) return;
+                              Navigator.push(
+                                context, 
+                                MaterialPageRoute(builder: (context) => const PasswordGeneratorView())
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 60, 52, 137),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: const Text(
+                              'Gerar Senha',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.language),
+                    title: const Text('Todos os itens'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.star),
+                    title: const Text('Favoritos'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.lock),
+                    title: const Text('Senhas'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text(
+                      'Categorias',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 60, 52, 137),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.people),
+                    title: const Text('Redes Sociais'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.account_balance),
+                    title: const Text('Bancos'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.work),
+                    title: const Text('Trabalhos'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const Divider(color: Color.fromARGB(40, 0, 0, 0), height: 1),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Configurações'),
+              iconColor: const Color.fromARGB(255, 102, 100, 117),
+              textColor: const Color.fromARGB(255, 102, 100, 117),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -153,7 +326,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                             height: 40,
                             child: IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {},
+                              onPressed: _confirmarExclusao,
                             ),
                           ),
                         ],
@@ -173,6 +346,8 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                         const SizedBox(height: 6),
                         TextFormField(
                           controller: _usuarioController,
+                          readOnly: true,
+                          style: const TextStyle(color: Colors.black87),
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: const Color.fromARGB(255, 216, 216, 224),
@@ -184,7 +359,9 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                               width: 40,
                               child: IconButton(
                                 icon: const Icon(Icons.copy, size: 20, color: Color(0xFF3C3489)),
-                                onPressed: () {},
+                                onPressed: () {
+                                  _copiarParaAreaTransferencia(_usuarioController.text, 'Usuário/Email');
+                                },
                               ),
                             ),
                           ),
@@ -198,6 +375,8 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                         TextFormField(
                           controller: _senhaController,
                           obscureText: _ocultarSenha,
+                          readOnly: true,
+                          style: const TextStyle(color: Colors.black87),
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: const Color.fromARGB(255, 216, 216, 224),
@@ -224,7 +403,9 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.copy, size: 20, color: Color(0xFF3C3489)),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      _copiarParaAreaTransferencia(_senhaController.text, 'Senha');
+                                    },
                                   ),
                                 ],
                               ),
@@ -258,6 +439,8 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                         const SizedBox(height: 6),
                         TextFormField(
                           controller: _urlController,
+                          readOnly: true,
+                          style: const TextStyle(color: Colors.black87),
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: const Color.fromARGB(255, 216, 216, 224),
@@ -268,24 +451,6 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                           ),
                         ),
                         const SizedBox(height: 30),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 60, 52, 137),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            child: const Text(
-                              'Salvar mudança',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
