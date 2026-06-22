@@ -6,6 +6,7 @@ class Senha {
   String authTag;
   String iv;
   String usuario;
+  String tipo;
 
   Senha({
     this.id,
@@ -15,6 +16,7 @@ class Senha {
     required this.authTag,
     required this.iv,
     required this.usuario,
+    required this.tipo
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +28,7 @@ class Senha {
       'authTag':    authTag,
       'IV':         iv,
       'usuario':    usuario,
+      'tipo': tipo,
     };
   }
 
@@ -38,6 +41,7 @@ class Senha {
       authTag:    map['authTag']    as String,
       iv:         map['IV']         as String,
       usuario:    map['usuario']    as String,
+      tipo:    map['usuario']    as String,
     );
   }
 }

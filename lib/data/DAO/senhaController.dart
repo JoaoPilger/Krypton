@@ -24,6 +24,7 @@ class SenhaController {
     required String titulo,
     required String usuario,
     required String senhaPlain, // senha que o usuário digitou
+    required String tipo
   }) async {
     if (titulo.trim().isEmpty || senhaPlain.isEmpty) {
       debugPrint('Título e senha são obrigatórios.');
@@ -51,6 +52,7 @@ class SenhaController {
         cipherText: base64Encode(secretBox.cipherText),
         authTag:    base64Encode(secretBox.mac.bytes),
         iv:         base64Encode(secretBox.nonce),
+        tipo: tipo
       );
 
       final db = DbService.db;
@@ -70,6 +72,7 @@ class SenhaController {
     required String titulo,
     required String usuario,
     required String senhaPlain,
+    required String tipo
   }) async {
     if (titulo.trim().isEmpty || senhaPlain.isEmpty) {
       debugPrint('Título e senha são obrigatórios.');
@@ -98,6 +101,7 @@ class SenhaController {
           'cipherText': base64Encode(secretBox.cipherText),
           'authTag':    base64Encode(secretBox.mac.bytes),
           'IV':         base64Encode(secretBox.nonce),
+          'tipo': tipo
         },
         where: 'id = ?',
         whereArgs: [id],
@@ -184,6 +188,7 @@ class SenhaController {
         'titulo':  row['titulo'],
         'usuario': row['usuario'],
         'senha':   senhaPlain, // dado descriptografado, só existe em memória
+        'tipo': row['tipo'],
       };
 
     } catch (e) {

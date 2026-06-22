@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'views/login_view.dart';
 import 'views/editar_senhas.dart';
+import 'views/password_generator_view.dart';
 
 void main() {
   runApp(const MaterialApp(home: LoginView(), debugShowCheckedModeBanner: false));
@@ -53,7 +54,13 @@ class Home extends StatelessWidget {
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (!context.mounted) return;
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(builder: (context) => const PasswordGeneratorView())
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(255, 60, 52, 137),
                               foregroundColor: Colors.white,
@@ -192,7 +199,13 @@ class Home extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: const Text('lucas@gmail.com'),
-                    onTap: () {},
+                    onTap: () {
+                      if (!context.mounted) return;
+                          Navigator.push(
+                          context, 
+                          MaterialPageRoute(builder: (context) => const EditarSenhaView())
+                        );
+                    },
                   ),
                 ),
                 const SizedBox(height: 20),
