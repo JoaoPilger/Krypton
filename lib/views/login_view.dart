@@ -14,12 +14,63 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   // Controlador para pegar o texto que o usuário digita no campo de senha
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
     // Limpa o controlador quando a tela for fechada
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _goHome() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Home()),
+    );
+  }
+
+  Future<void> _loginPIN() async {
+    if (_passwordController.text.isEmpty) return;
+    setState(() => _isLoading = true);
+ 
+    final bool ok = await KeystoreService.loginPIN(_passwordController.text);
+ 
+    setState(() => _isLoading = false);
+ 
+    if (!mounted) return;
+ 
+    if (ok) {
+      _goHome();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Senha incorreta. Tente novamente.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
+
+  Future<void> _loginBIO() async {
+    setState(() => _isLoading = true);
+ 
+    final bool ok = await KeystoreService.loginBIO();
+ 
+    setState(() => _isLoading = false);
+ 
+    if (!mounted) return;
+ 
+    if (ok) {
+      _goHome();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Autenticação biométrica falhou. Use sua senha.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
   }
 
   @override
@@ -94,15 +145,7 @@ class _LoginViewState extends State<LoginView> {
                 height: 50,
                 child: FilledButton(
                   onPressed: () async{
-                    bool authentication = await KeystoreService.loginPIN(_passwordController.text);
-                    if (authentication) {
-                      if (!context.mounted) return;
-
-                      Navigator.push(
-                        context,
-                      MaterialPageRoute(builder: (context) => const Home()),
-                      );
-                    }
+                    _loginPIN();
                   },
                   style: FilledButton.styleFrom(
                     backgroundColor: kryptonPurple,
@@ -145,10 +188,29 @@ class _LoginViewState extends State<LoginView> {
               const SizedBox(height: 40),
 
               // Ícone de biometria
-              const Icon(
-                Icons.fingerprint,
-                size: 100,
-                color: kryptonPurple,
+              GestureDetector(
+                onTap: _isLoading ? null : _loginBIO,
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.fingerprint,
+                      size: 100,
+                      color: _isLoading
+                          ? kryptonPurple.withValues()
+                          : kryptonPurple,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Entrar com biometria',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: _isLoading
+                            ? kryptonPurple.withValues()
+                            : kryptonPurple,
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 30),
