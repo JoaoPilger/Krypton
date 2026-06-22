@@ -35,6 +35,21 @@ class DbService {
     );
   }
 
+  static Future<bool> userRegistered() async {
+    if (_db == null) return false;
+
+    // Executa uma query que conta o número de registros na tabela 'usuarios'
+    final List<Map<String, dynamic>> resultado = await db.rawQuery(
+      'SELECT COUNT(*) as total FROM usuarios'
+    );
+
+    // Obtém a quantidade de registros
+    int? total = resultado.first['total'] as int?;
+
+    // Retorna true se já houver 1 ou mais usuários
+    return total! > 0;
+  }
+
   static Database get db {
     if (_db == null || !_db!.isOpen) {
       throw StateError('DbService não inicializado. Chame init() primeiro.');

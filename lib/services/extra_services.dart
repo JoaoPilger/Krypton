@@ -17,3 +17,4 @@ Future<List<int>> derivate(String input, List<int> salt) async{
 
   return await secretKey.extractBytes();
 }
+

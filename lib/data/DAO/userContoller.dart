@@ -15,6 +15,13 @@ class UserController {
     required String nome,
     required String senhaMestre,
   }) async {
+
+    // confere se já existe um usuario cadastrado e bloqueia novo cadastro
+    bool authentication = await DbService.userRegistered();
+    if (authentication) {
+      return false;
+    }
+
     if (nome.trim().isEmpty || senhaMestre.isEmpty) {
       debugPrint('Campos obrigatórios não preenchidos.');
       return false;
@@ -67,7 +74,7 @@ Future<void> registerDbKey(String senhaMestre) async{
     final String dbKeyRecup;
     final dbKeyRecupBytes = List<int>.generate(32, (_) => Random.secure().nextInt(256));
     dbKeyRecup = base64UrlEncode(dbKeyRecupBytes);
-      
+
     await DbService.init(dbKey);
 
     // Salva na Kestore do celular para desbloquear por biometria

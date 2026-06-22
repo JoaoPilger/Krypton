@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/DAO/userContoller.dart';
+import '../main.dart';
 
 // Tela de Cadastro do Krypton
 class RegisterView extends StatefulWidget {
@@ -160,8 +161,15 @@ class _RegisterViewState extends State<RegisterView> {
                 child: FilledButton(
                   // Se _acceptedTerms é true, o botão funciona. Se false, fica desabilitado
                   onPressed: _acceptedTerms
-                      ? () {
-                          UserController.cadastrar(nome: _nameController.text, senhaMestre: _passwordController.text);
+                      ? () async{
+                          bool authentication = await UserController.cadastrar(nome: _nameController.text, senhaMestre: _passwordController.text);
+                          if (authentication) {
+                            if (!context.mounted) return;
+                            Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (context) => const Home())
+                            );
+                          }
                         }
                       : null, // null desabilita o botão
                   style: FilledButton.styleFrom(
