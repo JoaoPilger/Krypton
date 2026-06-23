@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'views/password_generator_view.dart';
 import 'views/password_creator_view.dart';
-import 'views/editar_senhas.dart';
+import 'views/ver_senha.dart';
 import 'package:krypton/data/dao/senhaController.dart';
+import 'views/login_view.dart';
 
 void main() {
-  runApp(const MaterialApp(home: Home(), debugShowCheckedModeBanner: false));
+  runApp(const MaterialApp(home: LoginView(), debugShowCheckedModeBanner: false));
 }
 
 class Home extends StatefulWidget {
@@ -210,11 +211,26 @@ class _HomeState extends State<Home> {
                                   style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 subtitle: Text(item['usuario'] ?? ''),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => const EditarSenhaView()),
-                                  );
+                                onTap: () async {
+                                final deletar = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => VisualizarSenhaView(
+                                      id: item['id'],
+                                      titulo: item['titulo'] ?? 'Sem categoria',
+                                      usuario: item['usuario'] ?? '',
+                                      senha: item['senha'] ?? '',
+                                      url: item['url'] ?? '',
+                                    ),
+                                  ),
+                                );
+
+                                if (deletar == true) {
+                                  await SenhaController.deletar(item['id']); 
+                                  _atualizarLista();
+                                } else if (deletar == 'editado') {
+                                  _atualizarLista();
+                                }
                                 },
                               ),
                             );

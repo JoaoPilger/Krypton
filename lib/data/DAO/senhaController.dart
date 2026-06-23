@@ -23,8 +23,9 @@ class SenhaController {
     required int    userID,
     required String titulo,
     required String usuario,
-    required String senhaPlain, // senha que o usuário digitou
-    required String tipo
+    required String senhaPlain,
+    required String tipo,
+    String url = '',
   }) async {
     if (titulo.trim().isEmpty || senhaPlain.isEmpty) {
       debugPrint('Título e senha são obrigatórios.');
@@ -34,7 +35,6 @@ class SenhaController {
     try {
       final secretKey = await _getSecretKey();
 
-      // IV aleatório de 12 bytes (padrão AES-GCM)
       final iv         = List<int>.generate(12, (_) => Random.secure().nextInt(256));
       final plainBytes = utf8.encode(senhaPlain);
 
@@ -44,7 +44,6 @@ class SenhaController {
         nonce: iv,
       );
 
-      // authTag já está embutido no SecretBox — serializa junto com o cipherText
       final senha = Senha(
         userID:     userID,
         titulo:     titulo,
@@ -52,7 +51,8 @@ class SenhaController {
         cipherText: base64Encode(secretBox.cipherText),
         authTag:    base64Encode(secretBox.mac.bytes),
         iv:         base64Encode(secretBox.nonce),
-        tipo: tipo
+        tipo: tipo,
+        url: url,
       );
 
       final db = DbService.db;
@@ -72,7 +72,8 @@ class SenhaController {
     required String titulo,
     required String usuario,
     required String senhaPlain,
-    required String tipo
+    required String tipo,
+    String url = '',
   }) async {
     if (titulo.trim().isEmpty || senhaPlain.isEmpty) {
       debugPrint('Título e senha são obrigatórios.');
@@ -82,7 +83,6 @@ class SenhaController {
     try {
       final secretKey = await _getSecretKey();
 
-      // Novo IV a cada edição — nunca reutiliza
       final iv         = List<int>.generate(12, (_) => Random.secure().nextInt(256));
       final plainBytes = utf8.encode(senhaPlain);
 
@@ -101,7 +101,8 @@ class SenhaController {
           'cipherText': base64Encode(secretBox.cipherText),
           'authTag':    base64Encode(secretBox.mac.bytes),
           'IV':         base64Encode(secretBox.nonce),
-          'tipo': tipo
+          'tipo': tipo,
+          'url': url,
         },
         where: 'id = ?',
         whereArgs: [id],
@@ -187,8 +188,9 @@ class SenhaController {
         'userID':  row['userID'],
         'titulo':  row['titulo'],
         'usuario': row['usuario'],
-        'senha':   senhaPlain, // dado descriptografado, só existe em memória
+        'senha':   senhaPlain,
         'tipo': row['tipo'],
+        'url': row['url'] ?? '',
       };
 
     } catch (e) {

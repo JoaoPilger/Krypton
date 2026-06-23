@@ -1,40 +1,49 @@
-import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:krypton/data/dao/senhaController.dart';
 import 'password_generator_view.dart';
 
-class CriarSenhaView extends StatefulWidget {
-  const CriarSenhaView({super.key});
+class EditarSenhaView extends StatefulWidget {
+  final int id;
+  final String titulo;
+  final String usuario;
+  final String senha;
+  final String url;
+
+  const EditarSenhaView({
+    super.key,
+    required this.id,
+    required this.titulo,
+    required this.usuario,
+    required this.senha,
+    required this.url,
+  });
 
   @override
-  State<CriarSenhaView> createState() => _CriarSenhaViewState();
+  State<EditarSenhaView> createState() => _EditarSenhaViewState();
 }
 
-class _CriarSenhaViewState extends State<CriarSenhaView> {
+class _EditarSenhaViewState extends State<EditarSenhaView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String _categoriaSelecionada = 'Redes Sociais';
-  final List<String> _categorias = ['Redes Sociais', 'Bancos', 'Trabalhos', 'Outros'];
-
-  final TextEditingController _tituloController = TextEditingController(text: '');
-  final TextEditingController _usuarioController = TextEditingController(text: '');
-  final TextEditingController _senhaController = TextEditingController(text: '');
-  final TextEditingController _urlController = TextEditingController(text: '');
+  late final TextEditingController _tituloController;
+  late final TextEditingController _usuarioController;
+  late final TextEditingController _senhaController;
+  late final TextEditingController _urlController;
 
   bool _ocultarSenha = true;
   double _progressoSenha = 0.0;
   String _textoForca = 'Vazia';
   Color _corForca = Colors.grey;
 
-  File? _imagemCapa;
-  int constLogadoUserID = 1;
-
   @override
   void initState() {
     super.initState();
+    _tituloController = TextEditingController(text: widget.titulo);
+    _usuarioController = TextEditingController(text: widget.usuario);
+    _senhaController = TextEditingController(text: widget.senha);
+    _urlController = TextEditingController(text: widget.url);
+
     _avaliarSenha(_senhaController.text);
     _senhaController.addListener(() {
       _avaliarSenha(_senhaController.text);
@@ -49,12 +58,6 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
         content: Text('$campo copiado com sucesso!'),
         duration: const Duration(seconds: 2),
       ),
-    );
-  }
-
-  Future<void> _selecionarImagem() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Função de clique da imagem acionada!')),
     );
   }
 
@@ -98,15 +101,8 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
       return;
     }
 
-    const storage = FlutterSecureStorage();
-    final chaveExiste = await storage.read(key: 'db_key');
-    if (chaveExiste == null) {
-      final chaveMockada = base64Encode(List<int>.generate(32, (i) => i));
-      await storage.write(key: 'db_key', value: chaveMockada);
-    }
-
-    bool sucesso = await SenhaController.salvar(
-      userID: constLogadoUserID,
+    bool sucesso = await SenhaController.editar(
+      id: widget.id,
       titulo: _tituloController.text.trim(),
       usuario: _usuarioController.text.trim(),
       senhaPlain: _senhaController.text,
@@ -116,12 +112,12 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
 
     if (sucesso && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Senha salva com segurança!')),
+        const SnackBar(content: Text('Senha atualizada com sucesso!')),
       );
       Navigator.pop(context, true);
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao salvar no banco. Verifique seus dados.')),
+        const SnackBar(content: Text('Erro ao atualizar. Verifique seus dados.')),
       );
     }
   }
@@ -418,35 +414,6 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
                               suffixIcon: const Icon(Icons.open_in_new, color: colorPrimary),
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          const Text(
-                            'IMAGEM DE CAPA',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
-                          ),
-                          const SizedBox(height: 6),
-                          GestureDetector(
-                            onTap: _selecionarImagem,
-                            child: Container(
-                              height: 120,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE0E0E6),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: const Color(0xFF9999A5)),
-                              ),
-                              child: _imagemCapa != null
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(11),
-                                      child: Image.file(
-                                        _imagemCapa!,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  : const Center(
-                                      child: Icon(Icons.add, size: 40, color: colorPrimary),
-                                    ),
-                            ),
-                          ),
                           const SizedBox(height: 30),
                         ],
                       ),
@@ -467,7 +434,7 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
                     ),
                   ),
                   child: const Text(
-                    'Criar senha',
+                    'Salvar mudanças',
                     style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),

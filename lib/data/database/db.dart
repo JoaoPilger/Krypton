@@ -28,11 +28,17 @@ class DbService {
             authTag    TEXT    NOT NULL,
             IV         TEXT    NOT NULL UNIQUE,
             tipo       TEXT    NOT NULL,
+            url        TEXT,
             FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
           );
         ''');
       },
-      version: 1,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('ALTER TABLE senhas ADD COLUMN url TEXT;');
+        }
+      },
+      version: 2,
     );
   }
 

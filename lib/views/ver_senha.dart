@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'password_generator_view.dart';
+import 'editar_senha.dart';
 
-class EditarSenhaView extends StatefulWidget {
-  const EditarSenhaView({super.key});
+class VisualizarSenhaView extends StatefulWidget {
+  final int id;
+  final String usuario;
+  final String senha;
+  final String url;
+  final String titulo;
+
+  const VisualizarSenhaView({
+    super.key,
+    required this.id,
+    required this.usuario,
+    required this.senha,
+    required this.url,
+    this.titulo = 'Google',
+  });
 
   @override
-  State<EditarSenhaView> createState() => _EditarSenhaViewState();
+  State<VisualizarSenhaView> createState() => _VisualizarSenhaViewState();
 }
 
-class _EditarSenhaViewState extends State<EditarSenhaView> {
-  final TextEditingController _usuarioController = TextEditingController(text: 'lucas@gmail.com');
-  final TextEditingController _senhaController = TextEditingController(text: '123456');
-  final TextEditingController _urlController = TextEditingController(text: 'https://google.com');
+class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
+  late final TextEditingController _usuarioController;
+  late final TextEditingController _senhaController;
+  late final TextEditingController _urlController;
   
   bool _ocultarSenha = true;
   bool _esFavorito = false;
@@ -24,11 +38,17 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
   @override
   void initState() {
     super.initState();
+    _usuarioController = TextEditingController(text: widget.usuario);
+    _senhaController = TextEditingController(text: widget.senha);
+    _urlController = TextEditingController(text: widget.url);
+
     _avaliarSenha(_senhaController.text);
     _senhaController.addListener(() {
       _avaliarSenha(_senhaController.text);
     });
   }
+
+  void _atualizarLista() {}
 
   void _avaliarSenha(String senha) {
     if (senha.isEmpty) {
@@ -76,9 +96,9 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+              onPressed: () async {
+                Navigator.of(context).pop(); 
+                Navigator.of(context).pop(true); 
               },
               child: const Text('Excluir', style: TextStyle(color: Colors.red)),
             ),
@@ -89,6 +109,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
   }
 
   void _copiarParaAreaTransferencia(String texto, String campo) {
+    if (texto.isEmpty) return;
     Clipboard.setData(ClipboardData(text: texto));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -108,12 +129,12 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
 
   @override
   Widget build(BuildContext context) {
+    final nomeImagem = widget.titulo.toLowerCase().replaceAll(' ', '_');
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
-        iconTheme: const IconThemeData(
-          size: 32,
-        ),
+        iconTheme: const IconThemeData(size: 32),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -121,11 +142,12 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
               'lib/images/logo.png',
               height: 45,
               fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => const SizedBox(),
             ),
           ),
         ],
       ),
-      drawer: Drawer( // Novo widget
+      drawer: Drawer(
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         child: Column(
           children: [
@@ -145,6 +167,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                             'lib/images/logo.png',
                             height: 80,
                             fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.lock, size: 50),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -153,7 +176,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                           height: 48,
                           child: ElevatedButton(
                             onPressed: () {
-                              if (!context.mounted) return;
+                              Navigator.pop(context);
                               Navigator.push(
                                 context, 
                                 MaterialPageRoute(builder: (context) => const PasswordGeneratorView())
@@ -168,10 +191,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                             ),
                             child: const Text(
                               'Gerar Senha',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -185,6 +205,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                     textColor: const Color.fromARGB(255, 102, 100, 117),
                     onTap: () {
                       Navigator.pop(context);
+                      _atualizarLista();
                     },
                   ),
                   ListTile(
@@ -192,18 +213,14 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                     title: const Text('Favoritos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                   ListTile(
                     leading: const Icon(Icons.lock),
                     title: const Text('Senhas'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -221,27 +238,21 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                     title: const Text('Redes Sociais'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                   ListTile(
                     leading: const Icon(Icons.account_balance),
                     title: const Text('Bancos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                   ListTile(
                     leading: const Icon(Icons.work),
                     title: const Text('Trabalhos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                   ),
                 ],
               ),
@@ -252,9 +263,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
               title: const Text('Configurações'),
               iconColor: const Color.fromARGB(255, 102, 100, 117),
               textColor: const Color.fromARGB(255, 102, 100, 117),
-              onTap: () {
-                Navigator.pop(context);
-              },
+              onTap: () => Navigator.pop(context),
             ),
           ],
         ),
@@ -278,63 +287,71 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                             width: 40,
                             height: 40,
                             child: Image.asset(
-                              'lib/images/logo_google.png',
+                              'lib/images/logo_$nomeImagem.png',
                               fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) => const Icon(
+                                Icons.vpn_key, 
+                                color: Color(0xFF3C3489)
+                              ),
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Expanded( // Novo widget
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
+                              children: [
                                 Text(
-                                  'Google',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  widget.titulo,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
-                                Text(
-                                  'Atualizado em 3 dias',
+                                const Text(
+                                  'Salvo no Krypton',
                                   style: TextStyle(color: Colors.grey, fontSize: 12),
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: IconButton(
-                              icon: Icon(
-                                _esFavorito ? Icons.star : Icons.star_border,
-                                color: _esFavorito ? Colors.amber : const Color(0xFF666475),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _esFavorito = !_esFavorito;
-                                });
-                              },
+                          IconButton(
+                            icon: Icon(
+                              _esFavorito ? Icons.star : Icons.star_border,
+                              color: _esFavorito ? Colors.amber : const Color(0xFF666475),
                             ),
+                            onPressed: () {
+                              setState(() {
+                                _esFavorito = !_esFavorito;
+                              });
+                            },
                           ),
-                          SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: IconButton(
-                              icon: const Icon(Icons.edit, color: Color(0xFF666475)),
-                              onPressed: () {},
-                            ),
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Color(0xFF3C3489)),
+                            onPressed: () async {
+                              final resultado = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EditarSenhaView(
+                                    id: widget.id,
+                                    titulo: widget.titulo,
+                                    usuario: _usuarioController.text,
+                                    senha: _senhaController.text,
+                                    url: _urlController.text,
+                                  ),
+                                ),
+                              );
+                              if (resultado == true && mounted) {
+                                Navigator.of(context).pop('editado');
+                              }
+                            },
                           ),
-                          SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: _confirmarExclusao,
-                            ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: _confirmarExclusao,
                           ),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 24),
-                  ConstrainedBox( // Novo widget
+                  ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 500),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,14 +372,11 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                               borderRadius: BorderRadius.circular(8.0),
                               borderSide: BorderSide.none,
                             ),
-                            suffixIcon: SizedBox(
-                              width: 40,
-                              child: IconButton(
-                                icon: const Icon(Icons.copy, size: 20, color: Color(0xFF3C3489)),
-                                onPressed: () {
-                                  _copiarParaAreaTransferencia(_usuarioController.text, 'Usuário/Email');
-                                },
-                              ),
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.copy, size: 20, color: Color(0xFF3C3489)),
+                              onPressed: () {
+                                _copiarParaAreaTransferencia(_usuarioController.text, 'Usuário/Email');
+                              },
                             ),
                           ),
                         ),
@@ -413,15 +427,15 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Row( // Novo widget
+                        Row(
                           children: [
                             Text(
                               _textoForca,
                               style: TextStyle(fontSize: 12, color: _corForca, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(width: 8),
-                            Expanded( // Novo widget
-                              child: LinearProgressIndicator( // Novo widget
+                            Expanded(
+                              child: LinearProgressIndicator(
                                 value: _progressoSenha,
                                 backgroundColor: Colors.grey[300],
                                 color: _corForca,
@@ -447,6 +461,12 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
                               borderSide: BorderSide.none,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.copy, size: 20, color: Color(0xFF3C3489)),
+                              onPressed: () {
+                                _copiarParaAreaTransferencia(_urlController.text, 'URL');
+                              },
                             ),
                           ),
                         ),
