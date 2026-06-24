@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:krypton/data/dao/senhaController.dart';
 import 'password_generator_view.dart';
 import 'editar_senha.dart';
 
@@ -9,6 +10,7 @@ class VisualizarSenhaView extends StatefulWidget {
   final String senha;
   final String url;
   final String titulo;
+  final int favorito;
 
   const VisualizarSenhaView({
     super.key,
@@ -17,6 +19,7 @@ class VisualizarSenhaView extends StatefulWidget {
     required this.senha,
     required this.url,
     this.titulo = 'Google',
+    required this.favorito
   });
 
   @override
@@ -29,7 +32,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
   late final TextEditingController _urlController;
   
   bool _ocultarSenha = true;
-  bool _esFavorito = false;
+  int _esFavorito = 1;
 
   double _progressoSenha = 0.3;
   String _textoForca = 'Fraca';
@@ -38,6 +41,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
   @override
   void initState() {
     super.initState();
+    _esFavorito = widget.favorito;
     _usuarioController = TextEditingController(text: widget.usuario);
     _senhaController = TextEditingController(text: widget.senha);
     _urlController = TextEditingController(text: widget.url);
@@ -45,6 +49,10 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
     _avaliarSenha(_senhaController.text);
     _senhaController.addListener(() {
       _avaliarSenha(_senhaController.text);
+    });
+
+    SenhaController.buscarFavorito(widget.id).then((val) {
+      if (mounted) setState(() => _esFavorito = val);
     });
   }
 
@@ -313,13 +321,13 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                           ),
                           IconButton(
                             icon: Icon(
-                              _esFavorito ? Icons.star : Icons.star_border,
-                              color: _esFavorito ? Colors.amber : const Color(0xFF666475),
+                              _esFavorito == 1 ? Icons.star : Icons.star_border,
+                              color: _esFavorito == 1 ? Colors.amber : const Color(0xFF666475),     
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _esFavorito = !_esFavorito;
-                              });
+                            onPressed: () async{
+                              final novoEstado = _esFavorito == 1 ? 0 : 1;
+                              final ok = await SenhaController.favoritar(widget.id, favorito: novoEstado == 1);
+                              if (ok) setState(() => _esFavorito = novoEstado);
                             },
                           ),
                           IconButton(
@@ -398,31 +406,28 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                               borderRadius: BorderRadius.circular(8.0),
                               borderSide: BorderSide.none,
                             ),
-                            suffixIcon: SizedBox(
-                              width: 80,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      _ocultarSenha ? Icons.visibility : Icons.visibility_off,
-                                      size: 20,
-                                      color: const Color(0xFF666475),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _ocultarSenha = !_ocultarSenha;
-                                      });
-                                    },
+                            suffixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    _ocultarSenha ? Icons.visibility : Icons.visibility_off,
+                                    size: 20,
+                                    color: const Color(0xFF666475),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.copy, size: 20, color: Color(0xFF3C3489)),
-                                    onPressed: () {
-                                      _copiarParaAreaTransferencia(_senhaController.text, 'Senha');
-                                    },
-                                  ),
-                                ],
-                              ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _ocultarSenha = !_ocultarSenha;
+                                    });
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.copy, size: 20, color: Color(0xFF3C3489)),
+                                  onPressed: () {
+                                    _copiarParaAreaTransferencia(_senhaController.text, 'Senha');
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ),

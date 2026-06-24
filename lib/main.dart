@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'views/password_generator_view.dart';
 import 'views/password_creator_view.dart';
+import 'views/login_view.dart';
 import 'views/ver_senha.dart';
 import 'package:krypton/data/dao/senhaController.dart';
-import 'views/login_view.dart';
 
 void main() {
   runApp(const MaterialApp(home: LoginView(), debugShowCheckedModeBanner: false));
@@ -221,6 +221,7 @@ class _HomeState extends State<Home> {
                                       usuario: item['usuario'] ?? '',
                                       senha: item['senha'] ?? '',
                                       url: item['url'] ?? '',
+                                      favorito: item['favorito'] ?? 0,
                                     ),
                                   ),
                                 );

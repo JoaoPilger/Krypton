@@ -8,6 +8,7 @@ class Senha {
   String usuario;
   String tipo;
   String? url;
+  bool favorito;
 
   Senha({
     this.id,
@@ -19,6 +20,7 @@ class Senha {
     required this.usuario,
     required this.tipo,
     this.url,
+    required this.favorito
   });
 
   Map<String, dynamic> toMap() {
@@ -32,6 +34,7 @@ class Senha {
       'usuario':    usuario,
       'tipo':       tipo,
       'url':        url,
+      'favorito':   favorito,
     };
   }
 
@@ -46,6 +49,7 @@ class Senha {
       usuario:    map['usuario']    as String,
       tipo:       map['tipo']       as String,
       url:        map['url']        as String?,
+      favorito:   map['favorito']   as bool,
     );
   }
 }

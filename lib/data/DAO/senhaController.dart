@@ -26,6 +26,7 @@ class SenhaController {
     required String senhaPlain,
     required String tipo,
     String url = '',
+    bool favorito = false,
   }) async {
     if (titulo.trim().isEmpty || senhaPlain.isEmpty) {
       debugPrint('Título e senha são obrigatórios.');
@@ -53,6 +54,7 @@ class SenhaController {
         iv:         base64Encode(secretBox.nonce),
         tipo: tipo,
         url: url,
+        favorito: favorito,
       );
 
       final db = DbService.db;
@@ -191,12 +193,32 @@ class SenhaController {
         'senha':   senhaPlain,
         'tipo': row['tipo'],
         'url': row['url'] ?? '',
+        'favorito': row['favorito'],
       };
 
     } catch (e) {
       debugPrint('Falha ao decriptar entrada id ${row['id']}: $e');
       return null;
     }
+  }
+
+  // favoritar senha
+  static Future<bool> favoritar(int id, {required bool favorito}) async {
+    final db = DbService.db;
+    final updated = await db.update(
+      'senhas',
+      {'favorito': favorito ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    return updated > 0;
+  }
+
+  static Future<int> buscarFavorito(int id) async {
+    final db = DbService.db;
+    final rows = await db.query('senhas', columns: ['favorito'], where: 'id = ?', whereArgs: [id]);
+    if (rows.isEmpty) return 0;
+    return (rows.first['favorito'] as int?) ?? 0;
   }
 
   // Deleta uma senha por id

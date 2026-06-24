@@ -29,6 +29,7 @@ class DbService {
             IV         TEXT    NOT NULL UNIQUE,
             tipo       TEXT    NOT NULL,
             url        TEXT,
+            favorito   INTEGER NOT NULL,
             FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
           );
         ''');

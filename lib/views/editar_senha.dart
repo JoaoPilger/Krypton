@@ -348,31 +348,28 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide.none,
                               ),
-                              suffixIcon: SizedBox(
-                                width: 80,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(
-                                        _ocultarSenha ? Icons.visibility : Icons.visibility_off,
-                                        size: 20,
-                                        color: const Color(0xFF666475),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _ocultarSenha = !_ocultarSenha;
-                                        });
-                                      },
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      _ocultarSenha ? Icons.visibility : Icons.visibility_off,
+                                      size: 20,
+                                      color: const Color(0xFF666475),
                                     ),
-                                    IconButton(
-                                      icon: const Icon(Icons.copy, size: 20, color: colorPrimary),
-                                      onPressed: () {
-                                        _copiarParaAreaTransferencia(_senhaController.text, 'Senha');
-                                      },
-                                    ),
-                                  ],
-                                ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _ocultarSenha = !_ocultarSenha;
+                                      });
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.copy, size: 20, color: Color(0xFF3C3489)),
+                                    onPressed: () {
+                                      _copiarParaAreaTransferencia(_senhaController.text, 'Senha');
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
                           ),

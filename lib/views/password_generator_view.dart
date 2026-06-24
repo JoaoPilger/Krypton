@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 // Nota: usei `fontFamily` diretamente para evitar dependência em tempo de compilação
 
 class PasswordGeneratorView extends StatefulWidget {
@@ -23,6 +24,8 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
     super.initState();
     _generatePassword();
   }
+
+  void _atualizarLista() {}
 
   void _generatePassword() {
     const String numbers = "0123456789";
@@ -76,16 +79,133 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Color(0xFF3C3489)),
-          onPressed: () {},
-        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Image.asset('lib/images/logo.png', height: 45, fit: BoxFit.contain),
           ),
         ],
+      ),
+      drawer: Drawer(
+        backgroundColor: const Color.fromARGB(255, 216, 216, 224),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(16, 40, 16, 20),
+                    color: const Color.fromARGB(255, 216, 216, 224),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            'lib/images/logo.png',
+                            height: 80,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.lock, size: 50),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context, 
+                                MaterialPageRoute(builder: (context) => const PasswordGeneratorView())
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 60, 52, 137),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: const Text(
+                              'Gerar Senha',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.language),
+                    title: const Text('Todos os itens'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _atualizarLista();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.star),
+                    title: const Text('Favoritos'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.lock),
+                    title: const Text('Senhas'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text(
+                      'Categorias',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 60, 52, 137),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.people),
+                    title: const Text('Redes Sociais'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.account_balance),
+                    title: const Text('Bancos'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.work),
+                    title: const Text('Trabalhos'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(color: Color.fromARGB(40, 0, 0, 0), height: 1),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Configurações'),
+              iconColor: const Color.fromARGB(255, 102, 100, 117),
+              textColor: const Color.fromARGB(255, 102, 100, 117),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

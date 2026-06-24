@@ -16,8 +16,8 @@ class CriarSenhaView extends StatefulWidget {
 class _CriarSenhaViewState extends State<CriarSenhaView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String _categoriaSelecionada = 'Redes Sociais';
-  final List<String> _categorias = ['Redes Sociais', 'Bancos', 'Trabalhos', 'Outros'];
+  final String categoriaSelecionada = 'Redes Sociais';
+  final List<String> categorias = ['Redes Sociais', 'Bancos', 'Trabalhos', 'Outros'];
 
   final TextEditingController _tituloController = TextEditingController(text: '');
   final TextEditingController _usuarioController = TextEditingController(text: '');
@@ -352,31 +352,28 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide.none,
                               ),
-                              suffixIcon: SizedBox(
-                                width: 80,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(
-                                        _ocultarSenha ? Icons.visibility : Icons.visibility_off,
-                                        size: 20,
-                                        color: const Color(0xFF666475),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _ocultarSenha = !_ocultarSenha;
-                                        });
-                                      },
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      _ocultarSenha ? Icons.visibility : Icons.visibility_off,
+                                      size: 20,
+                                      color: const Color(0xFF666475),
                                     ),
-                                    IconButton(
-                                      icon: const Icon(Icons.copy, size: 20, color: colorPrimary),
-                                      onPressed: () {
-                                        _copiarParaAreaTransferencia(_senhaController.text, 'Senha');
-                                      },
-                                    ),
-                                  ],
-                                ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _ocultarSenha = !_ocultarSenha;
+                                      });
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.copy, size: 20, color: Color(0xFF3C3489)),
+                                    onPressed: () {
+                                      _copiarParaAreaTransferencia(_senhaController.text, 'Senha');
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
                           ),
