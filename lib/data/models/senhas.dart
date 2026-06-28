@@ -1,4 +1,5 @@
-class Senha {
+// Model da camada de dados — separado da classe Senha gerada pelo Drift (.g.dart)
+class SenhaModel {
   int? id;
   int? userID;
   String titulo;
@@ -10,7 +11,7 @@ class Senha {
   String? url;
   bool favorito;
 
-  Senha({
+  SenhaModel({
     this.id,
     this.userID,
     required this.titulo,
@@ -20,7 +21,7 @@ class Senha {
     required this.usuario,
     required this.tipo,
     this.url,
-    required this.favorito
+    required this.favorito,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,12 +35,12 @@ class Senha {
       'usuario':    usuario,
       'tipo':       tipo,
       'url':        url,
-      'favorito':   favorito,
+      'favorito':   favorito ? 1 : 0,
     };
   }
 
-  factory Senha.fromMap(Map<String, dynamic> map) {
-    return Senha(
+  factory SenhaModel.fromMap(Map<String, dynamic> map) {
+    return SenhaModel(
       id:         map['id']         as int?,
       userID:     map['userID']     as int?,
       titulo:     map['titulo']     as String,
@@ -49,7 +50,7 @@ class Senha {
       usuario:    map['usuario']    as String,
       tipo:       map['tipo']       as String,
       url:        map['url']        as String?,
-      favorito:   map['favorito']   as bool,
+      favorito:   (map['favorito']  as int? ?? 0) != 0,
     );
   }
 }

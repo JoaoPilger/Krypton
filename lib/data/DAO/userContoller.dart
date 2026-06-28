@@ -5,22 +5,21 @@ import '../models/user.dart';
 import 'dart:math';
 import 'package:cryptography/cryptography.dart';
 import '../../services/extra_services.dart';
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserController {
-  // Cadastro: gera as chaves, abre o banco e insere o usuário
-  
+
   static Future<bool> cadastrar({
     required String nome,
     required String senhaMestre,
   }) async {
 
-    // confere se já existe um usuario cadastrado e bloqueia novo cadastro
-    bool authentication = await DbService.userRegistered();
-    if (authentication) {
-      return false;
-    }
+    // Bloqueia segundo cadastro
+    // Obs: na primeira execução o banco ainda não está aberto,
+    // então userRegistered retorna false corretamente.
+    bool jaRegistrado = await DbService.userRegistered();
+    if (jaRegistrado) return false;
 
     if (nome.trim().isEmpty || senhaMestre.isEmpty) {
       debugPrint('Campos obrigatórios não preenchidos.');
@@ -28,15 +27,14 @@ class UserController {
     }
 
     try {
-      // Gera DB_Key, blobs, salts e abre o banco (DbService.init é chamado internamente)
-      await registerDbKey(senhaMestre);
+      await registerDbKey(senhaMestre); // abre o banco internamente
 
       final db   = DbService.db;
       final user = User(nome: nome);
 
       final id = await db.insert('users', user.toMap()..remove('id'));
       debugPrint('Usuário criado com id: $id');
-      
+
       return true;
 
     } catch (e) {
@@ -45,7 +43,6 @@ class UserController {
     }
   }
 
-  // Busca o usuário logado (assumindo um único usuário por banco)
   static Future<User?> getUser() async {
     try {
       final db   = DbService.db;
@@ -60,45 +57,43 @@ class UserController {
   }
 }
 
-// funcao de criar e salvar senha do DB
-Future<void> registerDbKey(String senhaMestre) async{
+// Gera a DB_Key, os blobs criptografados e abre o banco
+Future<void> registerDbKey(String senhaMestre) async {
   const dbKeyAlias = 'db_key';
-  const storage = FlutterSecureStorage();
+  const storage    = FlutterSecureStorage();
 
   try {
-      // cria a senha do DB como string e como lista de 32 bytes
-    final String dbKey;
+    // DB_Key: 32 bytes aleatórios codificados em base64Url
     final dbKeyBytes = List<int>.generate(32, (_) => Random.secure().nextInt(256));
-    dbKey = base64UrlEncode(dbKeyBytes);
+    final dbKey      = base64UrlEncode(dbKeyBytes);
 
-    final String dbKeyRecup;
+    // Chave de recuperação: 32 bytes independentes
     final dbKeyRecupBytes = List<int>.generate(32, (_) => Random.secure().nextInt(256));
-    dbKeyRecup = base64UrlEncode(dbKeyRecupBytes);
+    final dbKeyRecup      = base64UrlEncode(dbKeyRecupBytes);
 
+    // Abre o banco com a DB_Key (AppDatabase → PRAGMA key via hex)
     await DbService.init(dbKey);
 
-    // Salva na Kestore do celular para desbloquear por biometria
+    // Salva no Keystore para login por biometria
     await storage.write(key: dbKeyAlias, value: dbKey);
 
-      // códigos para criptografar as senhas de acesso
+    // Salts independentes para cada blob
     final salt1 = List<int>.generate(16, (_) => Random.secure().nextInt(256));
     final salt2 = List<int>.generate(16, (_) => Random.secure().nextInt(256));
-      
-    // senhas derivadas e criptografadas com argon2
+
+    // Deriva k1 da senha mestre e k2 da chave de recuperação via Argon2id
     final k1Bytes = await derivate(senhaMestre, salt1);
     final k2Bytes = await derivate(dbKeyRecup, salt2);
 
-    // transforma os Ks de Byte para SecretKey, para encaixar no encrypt do AES
-    final k1 = SecretKey(k1Bytes);
-    final k2 = SecretKey(k2Bytes);
-
-    // criptografia com AES-GCM
+    final k1  = SecretKey(k1Bytes);
+    final k2  = SecretKey(k2Bytes);
     final aes = AesGcm.with256bits();
 
-    final blob1 = await aes.encrypt(dbKeyBytes, secretKey: k1);
+    // Encripta a DB_Key com cada chave derivada
+    final blob1 = await aes.encrypt(dbKeyBytes,      secretKey: k1);
     final blob2 = await aes.encrypt(dbKeyRecupBytes, secretKey: k2);
 
-    // salvando blobs e salts no shared_preferences
+    // Persiste blobs e salts no SharedPreferences
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setString('blob1_cipher', base64Encode(blob1.cipherText));
@@ -108,12 +103,11 @@ Future<void> registerDbKey(String senhaMestre) async{
     await prefs.setString('blob2_cipher', base64Encode(blob2.cipherText));
     await prefs.setString('blob2_mac',    base64Encode(blob2.mac.bytes));
     await prefs.setString('blob2_nonce',  base64Encode(blob2.nonce));
-      
+
     await prefs.setString('salt1', base64Encode(salt1));
     await prefs.setString('salt2', base64Encode(salt2));
-      
+
   } catch (e) {
     debugPrint(e.toString());
   }
-    
 }
