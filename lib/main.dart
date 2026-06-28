@@ -18,9 +18,19 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int constLogadoUserID = 1;
+  String _termoBusca = '';
+  late Future<List<Map<String, dynamic>>> _senhasFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _senhasFuture = SenhaController.buscarTodas(constLogadoUserID);
+  }
 
   void _atualizarLista() {
-    setState(() {});
+    setState(() {
+      _senhasFuture = SenhaController.buscarTodas(constLogadoUserID);
+    });
   }
 
   @override
@@ -170,10 +180,15 @@ class _HomeState extends State<Home> {
               child: Column(
                 children: [
                   TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        _termoBusca = value;
+                      });
+                    },
                     decoration: InputDecoration(
                       hintText: 'Buscar Senhas',
                       hintStyle: const TextStyle(color: Color(0xFF666475)),
-                      prefixIcon: const Icon(Icons.search, color: Color.fromARGB(255, 60, 52, 137)),
+                      prefixIcon: const Icon(Icons.search, color: Color.fromARGB( 255, 60, 52, 137)),
                       filled: true,
                       fillColor: const Color.fromARGB(255, 216, 216, 224),
                       border: OutlineInputBorder(
@@ -185,7 +200,7 @@ class _HomeState extends State<Home> {
                   const SizedBox(height: 16),
                   Expanded(
                     child: FutureBuilder<List<Map<String, dynamic>>>(
-                      future: SenhaController.buscarTodas(constLogadoUserID),
+                      future: _senhasFuture,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
@@ -196,10 +211,21 @@ class _HomeState extends State<Home> {
 
                         final listaSenhas = snapshot.data!;
 
+                        final listaFiltrada = listaSenhas.where((item) {
+                          final titulo = item['titulo']?.toString().toLowerCase() ?? '';
+                          final usuario = item['usuario']?.toString().toLowerCase() ?? '';
+                          final busca = _termoBusca.toLowerCase();
+                          return titulo.contains(busca) || usuario.contains(busca);
+                        }).toList();
+
+                        if (listaFiltrada.isEmpty) {
+                          return const Center(child: Text('Nenhum resultado encontrado.'));
+                        }
+
                         return ListView.builder(
-                          itemCount: listaSenhas.length,
+                          itemCount: listaFiltrada.length,
                           itemBuilder: (context, index) {
-                            final item = listaSenhas[index];
+                            final item = listaFiltrada[index];
                             return Card(
                               elevation: 2,
                               margin: const EdgeInsets.symmetric(vertical: 6),
@@ -212,26 +238,26 @@ class _HomeState extends State<Home> {
                                 ),
                                 subtitle: Text(item['usuario'] ?? ''),
                                 onTap: () async {
-                                final deletar = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => VisualizarSenhaView(
-                                      id: item['id'],
-                                      titulo: item['titulo'] ?? 'Sem categoria',
-                                      usuario: item['usuario'] ?? '',
-                                      senha: item['senha'] ?? '',
-                                      url: item['url'] ?? '',
-                                      favorito: item['favorito'] ?? 0,
+                                  final deletar = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VisualizarSenhaView(
+                                        id: item['id'],
+                                        titulo: item['titulo'] ?? 'Sem categoria',
+                                        usuario: item['usuario'] ?? '',
+                                        senha: item['senha'] ?? '',
+                                        url: item['url'] ?? '',
+                                        favorito: item['favorito'] ?? 0,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
 
-                                if (deletar == true) {
-                                  await SenhaController.deletar(item['id']); 
-                                  _atualizarLista();
-                                } else if (deletar == 'editado') {
-                                  _atualizarLista();
-                                }
+                                  if (deletar == true) {
+                                    await SenhaController.deletar(item['id']); 
+                                    _atualizarLista();
+                                  } else if (deletar == 'editado') {
+                                    _atualizarLista();
+                                  }
                                 },
                               ),
                             );
