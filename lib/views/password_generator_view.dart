@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:krypton/main.dart';
 
-// Nota: usei `fontFamily` diretamente para evitar dependência em tempo de compilação
 
 class PasswordGeneratorView extends StatefulWidget {
   const PasswordGeneratorView({super.key});
@@ -143,8 +143,10 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
                     onTap: () {
-                      Navigator.pop(context);
-                      _atualizarLista();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Todos')),
+                      );
                     },
                   ),
                   ListTile(
@@ -152,14 +154,24 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                     title: const Text('Favoritos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Favoritos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.lock),
                     title: const Text('Senhas'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Senha')),
+                      );
+                    },
                   ),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -177,21 +189,48 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                     title: const Text('Redes Sociais'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Redes Sociais')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.account_balance),
                     title: const Text('Bancos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Bancos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.work),
                     title: const Text('Trabalhos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Trabalhos')),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.other_houses),
+                    title: const Text('Outros'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Outros')),
+                      );
+                    },
                   ),
                 ],
               ),

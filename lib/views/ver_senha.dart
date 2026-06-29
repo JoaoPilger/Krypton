@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:krypton/data/dao/senhaController.dart';
 import 'password_generator_view.dart';
 import 'editar_senha.dart';
+import 'package:krypton/main.dart';
 
 class VisualizarSenhaView extends StatefulWidget {
   final int id;
@@ -11,6 +12,7 @@ class VisualizarSenhaView extends StatefulWidget {
   final String url;
   final String titulo;
   final int favorito;
+  final String tipo; 
 
   const VisualizarSenhaView({
     super.key,
@@ -19,7 +21,8 @@ class VisualizarSenhaView extends StatefulWidget {
     required this.senha,
     required this.url,
     this.titulo = 'Google',
-    required this.favorito
+    required this.favorito,
+    required this.tipo,
   });
 
   @override
@@ -212,8 +215,10 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
                     onTap: () {
-                      Navigator.pop(context);
-                      _atualizarLista();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Todos')),
+                      );
                     },
                   ),
                   ListTile(
@@ -221,14 +226,24 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                     title: const Text('Favoritos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Favoritos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.lock),
                     title: const Text('Senhas'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Senha')),
+                      );
+                    },
                   ),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -246,21 +261,48 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                     title: const Text('Redes Sociais'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Redes Sociais')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.account_balance),
                     title: const Text('Bancos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Bancos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.work),
                     title: const Text('Trabalhos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Trabalhos')),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.other_houses),
+                    title: const Text('Outros'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Outros')),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -342,6 +384,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                                     usuario: _usuarioController.text,
                                     senha: _senhaController.text,
                                     url: _urlController.text,
+                                    tipo: widget.tipo,
                                   ),
                                 ),
                               );

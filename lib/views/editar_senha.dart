@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:krypton/data/dao/senhaController.dart';
 import 'password_generator_view.dart';
+import 'package:krypton/main.dart';
 
 class EditarSenhaView extends StatefulWidget {
   final int id;
@@ -9,6 +10,7 @@ class EditarSenhaView extends StatefulWidget {
   final String usuario;
   final String senha;
   final String url;
+  final String tipo; 
 
   const EditarSenhaView({
     super.key,
@@ -17,6 +19,7 @@ class EditarSenhaView extends StatefulWidget {
     required this.usuario,
     required this.senha,
     required this.url,
+    required this.tipo,
   });
 
   @override
@@ -30,6 +33,8 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
   late final TextEditingController _usuarioController;
   late final TextEditingController _senhaController;
   late final TextEditingController _urlController;
+  static const List<String> _categorias = ['Redes Sociais', 'Bancos', 'Trabalhos', 'Outros'];
+  late String _categoriaSelecionada;
 
   bool _ocultarSenha = true;
   double _progressoSenha = 0.0;
@@ -43,7 +48,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
     _usuarioController = TextEditingController(text: widget.usuario);
     _senhaController = TextEditingController(text: widget.senha);
     _urlController = TextEditingController(text: widget.url);
-
+    _categoriaSelecionada = _categorias.contains(widget.tipo) ? widget.tipo : 'Outros';
     _avaliarSenha(_senhaController.text);
     _senhaController.addListener(() {
       _avaliarSenha(_senhaController.text);
@@ -106,7 +111,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
       titulo: _tituloController.text.trim(),
       usuario: _usuarioController.text.trim(),
       senhaPlain: _senhaController.text,
-      tipo: 'Senha',
+      tipo: _categoriaSelecionada,
       url: _urlController.text.trim(),
     );
 
@@ -211,21 +216,36 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                     title: const Text('Todos os itens'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Todos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.star),
                     title: const Text('Favoritos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Favoritos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.lock),
                     title: const Text('Senhas'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Senha')),
+                      );
+                    },
                   ),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -243,21 +263,48 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                     title: const Text('Redes Sociais'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Redes Sociais')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.account_balance),
                     title: const Text('Bancos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Bancos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.work),
                     title: const Text('Trabalhos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Trabalhos')),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.other_houses),
+                    title: const Text('Outros'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Outros')),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -391,6 +438,36 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                                 ),
                               ),
                             ],
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Categoria',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
+                          ),
+                          const SizedBox(height: 6),
+                          DropdownButtonFormField<String>(
+                            value: _categoriaSelecionada,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: colorBackgroundBox,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            items: _categorias.map((String cat) {
+                              return DropdownMenuItem<String>(
+                                value: cat,
+                                child: Text(cat),
+                              );
+                            }).toList(),
+                            onChanged: (String? novaCat) {
+                              if (novaCat != null) {
+                                setState(() {
+                                  _categoriaSelecionada = novaCat;
+                                });
+                              }
+                            },
                           ),
                           const SizedBox(height: 20),
                           const Text(

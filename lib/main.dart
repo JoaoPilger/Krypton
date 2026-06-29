@@ -10,7 +10,9 @@ void main() {
 }
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+
+  final String filtroInicial;
+  const Home({super.key, this.filtroInicial = 'Todos'});
 
   @override
   State<Home> createState() => _HomeState();
@@ -19,11 +21,13 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int constLogadoUserID = 1;
   String _termoBusca = '';
+  late String _filtroAtivo; 
   late Future<List<Map<String, dynamic>>> _senhasFuture;
 
   @override
   void initState() {
     super.initState();
+    _filtroAtivo = widget.filtroInicial;
     _senhasFuture = SenhaController.buscarTodas(constLogadoUserID);
   }
 
@@ -105,26 +109,35 @@ class _HomeState extends State<Home> {
                   ListTile(
                     leading: const Icon(Icons.language),
                     title: const Text('Todos os itens'),
+                    selected: _filtroAtivo == 'Todos',
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
                     onTap: () {
+                      setState(() => _filtroAtivo = 'Todos');
                       Navigator.pop(context);
-                      _atualizarLista();
                     },
                   ),
                   ListTile(
                     leading: const Icon(Icons.star),
                     title: const Text('Favoritos'),
+                    selected: _filtroAtivo == 'Favoritos',
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      setState(() => _filtroAtivo = 'Favoritos');
+                      Navigator.pop(context);
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.lock),
                     title: const Text('Senhas'),
+                    selected: _filtroAtivo == 'Senha',
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      setState(() => _filtroAtivo = 'Senha');
+                      Navigator.pop(context);
+                    },
                   ),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -140,23 +153,46 @@ class _HomeState extends State<Home> {
                   ListTile(
                     leading: const Icon(Icons.people),
                     title: const Text('Redes Sociais'),
+                    selected: _filtroAtivo == 'Redes Sociais',
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      setState(() => _filtroAtivo = 'Redes Sociais');
+                      Navigator.pop(context);
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.account_balance),
                     title: const Text('Bancos'),
+                    selected: _filtroAtivo == 'Bancos',
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      setState(() => _filtroAtivo = 'Bancos');
+                      Navigator.pop(context);
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.work),
                     title: const Text('Trabalhos'),
+                    selected: _filtroAtivo == 'Trabalhos',
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      setState(() => _filtroAtivo = 'Trabalhos');
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.other_houses),
+                    title: const Text ('Outros'),
+                    selected: _filtroAtivo == 'Outros',
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      setState(() => _filtroAtivo = 'Outros');
+                      Navigator.pop(context);
+                    },
                   ),
                 ],
               ),
@@ -215,7 +251,16 @@ class _HomeState extends State<Home> {
                           final titulo = item['titulo']?.toString().toLowerCase() ?? '';
                           final usuario = item['usuario']?.toString().toLowerCase() ?? '';
                           final busca = _termoBusca.toLowerCase();
-                          return titulo.contains(busca) || usuario.contains(busca);
+                          final bateTexto = titulo.contains(busca) || usuario.contains(busca);
+                          if (!bateTexto) return false;
+
+                          if (_filtroAtivo == 'Todos') {
+                            return true;
+                          } else if (_filtroAtivo == 'Favoritos') {
+                            return (item['favorito'] as int? ?? 0) == 1;
+                          } else {
+                            return item['tipo'] == _filtroAtivo;
+                          }
                         }).toList();
 
                         if (listaFiltrada.isEmpty) {
@@ -248,6 +293,7 @@ class _HomeState extends State<Home> {
                                         senha: item['senha'] ?? '',
                                         url: item['url'] ?? '',
                                         favorito: item['favorito'] ?? 0,
+                                        tipo: item['tipo'] ?? 'Outros', 
                                       ),
                                     ),
                                   );

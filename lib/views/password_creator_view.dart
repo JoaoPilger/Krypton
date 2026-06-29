@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:krypton/data/dao/senhaController.dart';
 import 'password_generator_view.dart';
+import 'package:krypton/main.dart';
 
 class CriarSenhaView extends StatefulWidget {
   const CriarSenhaView({super.key});
@@ -16,7 +17,7 @@ class CriarSenhaView extends StatefulWidget {
 class _CriarSenhaViewState extends State<CriarSenhaView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final String categoriaSelecionada = 'Redes Sociais';
+  String _categoriaSelecionada = 'Redes Sociais';
   final List<String> categorias = ['Redes Sociais', 'Bancos', 'Trabalhos', 'Outros'];
 
   final TextEditingController _tituloController = TextEditingController(text: '');
@@ -110,7 +111,7 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
       titulo: _tituloController.text.trim(),
       usuario: _usuarioController.text.trim(),
       senhaPlain: _senhaController.text,
-      tipo: 'Senha',
+      tipo: _categoriaSelecionada,
       url: _urlController.text.trim(),
     );
 
@@ -215,21 +216,36 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
                     title: const Text('Todos os itens'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Todos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.star),
                     title: const Text('Favoritos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Favoritos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.lock),
                     title: const Text('Senhas'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Senha')),
+                      );
+                    },
                   ),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -247,21 +263,48 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
                     title: const Text('Redes Sociais'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Redes Sociais')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.account_balance),
                     title: const Text('Bancos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Bancos')),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.work),
                     title: const Text('Trabalhos'),
                     iconColor: const Color.fromARGB(255, 102, 100, 117),
                     textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Trabalhos')),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.other_houses),
+                    title: const Text('Outros'),
+                    iconColor: const Color.fromARGB(255, 102, 100, 117),
+                    textColor: const Color.fromARGB(255, 102, 100, 117),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Outros')),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -395,6 +438,36 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
                                 ),
                               ),
                             ],
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Categoria',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
+                          ),
+                          const SizedBox(height: 6),
+                          DropdownButtonFormField<String>(
+                            initialValue: _categoriaSelecionada,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: colorBackgroundBox,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            items: categorias.map((String cat) {
+                              return DropdownMenuItem<String>(
+                                value: cat,
+                                child: Text(cat),
+                              );
+                            }).toList(),
+                            onChanged: (String? novaCat) {
+                              if (novaCat != null) {
+                                setState(() {
+                                  _categoriaSelecionada = novaCat;
+                                });
+                              }
+                            },
                           ),
                           const SizedBox(height: 20),
                           const Text(
