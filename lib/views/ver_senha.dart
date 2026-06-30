@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:krypton/data/dao/senhaController.dart';
@@ -12,7 +13,8 @@ class VisualizarSenhaView extends StatefulWidget {
   final String url;
   final String titulo;
   final int favorito;
-  final String tipo; 
+  final String tipo;
+  final String? imagemPath;
 
   const VisualizarSenhaView({
     super.key,
@@ -23,6 +25,7 @@ class VisualizarSenhaView extends StatefulWidget {
     this.titulo = 'Google',
     required this.favorito,
     required this.tipo,
+    this.imagemPath,
   });
 
   @override
@@ -36,6 +39,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
   
   bool _ocultarSenha = true;
   int _esFavorito = 1;
+  String? _imagemPath;
 
   double _progressoSenha = 0.3;
   String _textoForca = 'Fraca';
@@ -45,6 +49,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
   void initState() {
     super.initState();
     _esFavorito = widget.favorito;
+    _imagemPath = widget.imagemPath;
     _usuarioController = TextEditingController(text: widget.usuario);
     _senhaController = TextEditingController(text: widget.senha);
     _urlController = TextEditingController(text: widget.url);
@@ -336,14 +341,19 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                           SizedBox(
                             width: 40,
                             height: 40,
-                            child: Image.asset(
-                              'lib/images/logo_$nomeImagem.png',
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) => const Icon(
-                                Icons.vpn_key, 
-                                color: Color(0xFF3C3489)
-                              ),
-                            ),
+                            child: (_imagemPath != null && File(_imagemPath!).existsSync())
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: Image.file(File(_imagemPath!), fit: BoxFit.cover),
+                                  )
+                                : Image.asset(
+                                    'lib/images/logo_$nomeImagem.png',
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) => const Icon(
+                                      Icons.vpn_key,
+                                      color: Color(0xFF3C3489),
+                                    ),
+                                  ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -385,6 +395,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                                     senha: _senhaController.text,
                                     url: _urlController.text,
                                     tipo: widget.tipo,
+                                    imagemPath: _imagemPath,
                                   ),
                                 ),
                               );

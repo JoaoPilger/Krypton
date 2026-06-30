@@ -1,5 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import 'package:krypton/data/dao/senhaController.dart';
 import 'password_generator_view.dart';
 import 'package:krypton/main.dart';
@@ -10,7 +14,8 @@ class EditarSenhaView extends StatefulWidget {
   final String usuario;
   final String senha;
   final String url;
-  final String tipo; 
+  final String tipo;
+  final String? imagemPath;
 
   const EditarSenhaView({
     super.key,
@@ -20,6 +25,7 @@ class EditarSenhaView extends StatefulWidget {
     required this.senha,
     required this.url,
     required this.tipo,
+    this.imagemPath,
   });
 
   @override
@@ -41,6 +47,8 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
   String _textoForca = 'Vazia';
   Color _corForca = Colors.grey;
 
+  File? _imagemCapa;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +57,9 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
     _senhaController = TextEditingController(text: widget.senha);
     _urlController = TextEditingController(text: widget.url);
     _categoriaSelecionada = _categorias.contains(widget.tipo) ? widget.tipo : 'Outros';
+    if (widget.imagemPath != null) {
+      _imagemCapa = File(widget.imagemPath!);
+    }
     _avaliarSenha(_senhaController.text);
     _senhaController.addListener(() {
       _avaliarSenha(_senhaController.text);
@@ -64,6 +75,20 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  Future<void> _selecionarImagem() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    if (picked == null) return;
+
+    final dir = await getApplicationDocumentsDirectory();
+    final nomeArquivo = 'capa_${DateTime.now().millisecondsSinceEpoch}${p.extension(picked.path)}';
+    final novoArquivo = await File(picked.path).copy(p.join(dir.path, nomeArquivo));
+
+    setState(() {
+      _imagemCapa = novoArquivo;
+    });
   }
 
   void _avaliarSenha(String senha) {
@@ -113,6 +138,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
       senhaPlain: _senhaController.text,
       tipo: _categoriaSelecionada,
       url: _urlController.text.trim(),
+      imagemPath: _imagemCapa?.path,
     );
 
     if (sucesso && mounted) {
@@ -486,6 +512,35 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                                 borderSide: BorderSide.none,
                               ),
                               suffixIcon: const Icon(Icons.open_in_new, color: colorPrimary),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          const Text(
+                            'IMAGEM DE CAPA',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
+                          ),
+                          const SizedBox(height: 6),
+                          GestureDetector(
+                            onTap: _selecionarImagem,
+                            child: Container(
+                              height: 120,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE0E0E6),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFF9999A5)),
+                              ),
+                              child: _imagemCapa != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(11),
+                                      child: Image.file(
+                                        _imagemCapa!,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : const Center(
+                                      child: Icon(Icons.add, size: 40, color: colorPrimary),
+                                    ),
                             ),
                           ),
                           const SizedBox(height: 30),

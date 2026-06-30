@@ -120,7 +120,8 @@ class _LoginViewState extends State<LoginView> {
 
               const SizedBox(height: 32),
 
-              // Campo para digitar a senha (esconde o texto)
+              // Campo para digitar a senha (esconde o te
+              
               TextFormField(
                 controller: _passwordController,
                 obscureText: true, // Esconde o que está sendo digitado

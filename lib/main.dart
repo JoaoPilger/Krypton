@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'views/password_generator_view.dart';
 import 'views/password_creator_view.dart';
@@ -271,12 +272,23 @@ class _HomeState extends State<Home> {
                           itemCount: listaFiltrada.length,
                           itemBuilder: (context, index) {
                             final item = listaFiltrada[index];
+                            final imagemPath = item['imagemPath'] as String?;
                             return Card(
                               elevation: 2,
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               color: const Color.fromARGB(255, 240, 240, 245),
                               child: ListTile(
-                                leading: const Icon(Icons.vpn_key, color: Color(0xFF333383)),
+                                leading: (imagemPath != null && File(imagemPath).existsSync())
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.file(
+                                          File(imagemPath),
+                                          width: 40,
+                                          height: 40,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : const Icon(Icons.vpn_key, color: Color(0xFF333383)),
                                 title: Text(
                                   item['titulo'] ?? 'Sem categoria',
                                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -294,6 +306,7 @@ class _HomeState extends State<Home> {
                                         url: item['url'] ?? '',
                                         favorito: item['favorito'] ?? 0,
                                         tipo: item['tipo'] ?? 'Outros', 
+                                        imagemPath: imagemPath,
                                       ),
                                     ),
                                   );

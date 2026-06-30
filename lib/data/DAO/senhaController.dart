@@ -29,6 +29,7 @@ class SenhaController {
     required String tipo,
     String url = '',
     bool favorito = false,
+    String? imagemPath,
   }) async {
     if (titulo.trim().isEmpty || senhaPlain.isEmpty) {
       debugPrint('Título e senha são obrigatórios.');
@@ -54,6 +55,7 @@ class SenhaController {
         tipo:       tipo,
         url:        url,
         favorito:   favorito,
+        imagemPath: imagemPath,
       );
 
       final id = await DbService.db.insert('senhas', senha.toMap()..remove('id'));
@@ -73,6 +75,7 @@ class SenhaController {
     required String senhaPlain,
     required String tipo,
     String url = '',
+    String? imagemPath,
   }) async {
     if (titulo.trim().isEmpty || senhaPlain.isEmpty) {
       debugPrint('Título e senha são obrigatórios.');
@@ -88,17 +91,23 @@ class SenhaController {
         nonce: iv,
       );
 
+      final valores = {
+        'titulo':     titulo,
+        'usuario':    usuario,
+        'cipherText': base64Encode(secretBox.cipherText),
+        'authTag':    base64Encode(secretBox.mac.bytes),
+        'IV':         base64Encode(secretBox.nonce),
+        'tipo':       tipo,
+        'url':        url,
+      };
+
+      if (imagemPath != null) {
+        valores['imagemPath'] = imagemPath;
+      }
+
       final updated = await DbService.db.update(
         'senhas',
-        {
-          'titulo':     titulo,
-          'usuario':    usuario,
-          'cipherText': base64Encode(secretBox.cipherText),
-          'authTag':    base64Encode(secretBox.mac.bytes),
-          'IV':         base64Encode(secretBox.nonce),
-          'tipo':       tipo,
-          'url':        url,
-        },
+        valores,
         where:     'id = ?',
         whereArgs: [id],
       );
@@ -160,14 +169,15 @@ class SenhaController {
       final plainBytes = await _aes.decrypt(secretBox, secretKey: secretKey);
 
       return {
-        'id':       row['id'],
-        'userID':   row['userID'],
-        'titulo':   row['titulo'],
-        'usuario':  row['usuario'],
-        'senha':    utf8.decode(plainBytes),
-        'tipo':     row['tipo'],
-        'url':      row['url'] ?? '',
-        'favorito': (row['favorito'] as int? ?? 0),
+        'id':         row['id'],
+        'userID':     row['userID'],
+        'titulo':     row['titulo'],
+        'usuario':    row['usuario'],
+        'senha':      utf8.decode(plainBytes),
+        'tipo':       row['tipo'],
+        'url':        row['url'] ?? '',
+        'favorito':   (row['favorito'] as int? ?? 0),
+        'imagemPath': row['imagemPath'],
       };
 
     } catch (e) {

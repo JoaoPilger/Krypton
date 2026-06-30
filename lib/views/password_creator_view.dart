@@ -6,6 +6,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:krypton/data/dao/senhaController.dart';
 import 'password_generator_view.dart';
 import 'package:krypton/main.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 class CriarSenhaView extends StatefulWidget {
   const CriarSenhaView({super.key});
@@ -54,9 +57,17 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
   }
 
   Future<void> _selecionarImagem() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Função de clique da imagem acionada!')),
-    );
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    if (picked == null) return;
+
+    final dir = await getApplicationDocumentsDirectory();
+    final nomeArquivo = 'capa_${DateTime.now().millisecondsSinceEpoch}${p.extension(picked.path)}';
+    final novoArquivo = await File(picked.path).copy(p.join(dir.path, nomeArquivo));
+
+    setState(() {
+      _imagemCapa = novoArquivo;
+    });
   }
 
   void _avaliarSenha(String senha) {
@@ -113,6 +124,7 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
       senhaPlain: _senhaController.text,
       tipo: _categoriaSelecionada,
       url: _urlController.text.trim(),
+      imagemPath: _imagemCapa?.path,
     );
 
     if (sucesso && mounted) {

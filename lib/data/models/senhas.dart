@@ -1,4 +1,3 @@
-// Model da camada de dados — separado da classe Senha gerada pelo Drift (.g.dart)
 class SenhaModel {
   int? id;
   int? userID;
@@ -10,6 +9,7 @@ class SenhaModel {
   String tipo;
   String? url;
   bool favorito;
+  String? imagemPath;
 
   SenhaModel({
     this.id,
@@ -22,6 +22,7 @@ class SenhaModel {
     required this.tipo,
     this.url,
     required this.favorito,
+    this.imagemPath,
   });
 
   Map<String, dynamic> toMap() {
@@ -36,6 +37,7 @@ class SenhaModel {
       'tipo':       tipo,
       'url':        url,
       'favorito':   favorito ? 1 : 0,
+      'imagemPath': imagemPath,
     };
   }
 
@@ -51,6 +53,7 @@ class SenhaModel {
       tipo:       map['tipo']       as String,
       url:        map['url']        as String?,
       favorito:   (map['favorito']  as int? ?? 0) != 0,
+      imagemPath: map['imagemPath'] as String?,
     );
   }
 }

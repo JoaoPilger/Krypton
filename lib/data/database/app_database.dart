@@ -51,9 +51,14 @@ class AppDatabase {
         IV         TEXT    NOT NULL UNIQUE,
         tipo       TEXT    NOT NULL,
         url        TEXT,
-        favorito   INTEGER NOT NULL DEFAULT 0
+        favorito   INTEGER NOT NULL DEFAULT 0,
+        imagemPath TEXT
       );
     ''', []);
+
+    try {
+      await executor.runCustom('ALTER TABLE senhas ADD COLUMN imagemPath TEXT;', []);
+    } catch (_) {}
   }
 
   Future<bool> userRegistered() async {
