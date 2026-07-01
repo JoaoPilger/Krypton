@@ -79,6 +79,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         elevation: 0,
+        iconTheme: const IconThemeData(size: 32),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -158,18 +159,6 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Favoritos')),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.lock),
-                    title: const Text('Senhas'),
-                    iconColor: const Color.fromARGB(255, 102, 100, 117),
-                    textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Senha')),
                       );
                     },
                   ),

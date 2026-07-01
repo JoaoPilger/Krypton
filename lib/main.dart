@@ -43,7 +43,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
-        iconTheme: const IconThemeData(size: 32),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, size: 32),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -126,17 +131,6 @@ class _HomeState extends State<Home> {
                     textColor: const Color.fromARGB(255, 102, 100, 117),
                     onTap: () {
                       setState(() => _filtroAtivo = 'Favoritos');
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.lock),
-                    title: const Text('Senhas'),
-                    selected: _filtroAtivo == 'Senha',
-                    iconColor: const Color.fromARGB(255, 102, 100, 117),
-                    textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      setState(() => _filtroAtivo = 'Senha');
                       Navigator.pop(context);
                     },
                   ),
