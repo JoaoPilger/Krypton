@@ -247,18 +247,6 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
                       );
                     },
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.lock),
-                    title: const Text('Senhas'),
-                    iconColor: const Color.fromARGB(255, 102, 100, 117),
-                    textColor: const Color.fromARGB(255, 102, 100, 117),
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Senha')),
-                      );
-                    },
-                  ),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                     child: Text(
