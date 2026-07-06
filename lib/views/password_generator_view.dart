@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:krypton/main.dart';
+import 'password_creator_view.dart';
 
 
 class PasswordGeneratorView extends StatefulWidget {
@@ -68,6 +69,22 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
         );
       }
     });
+  }
+
+  void _salvarSenha() {
+    if (_generatedPassword.isEmpty || _generatedPassword == "Selecione uma opção") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gere uma senha válida antes de salvar')),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CriarSenhaView(senhaInicial: _generatedPassword),
+      ),
+    );
   }
 
   @override
@@ -392,6 +409,25 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 54,
+                    child: ElevatedButton(
+                      onPressed: _salvarSenha,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'Salvar senha',
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

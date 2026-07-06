@@ -11,7 +11,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 class CriarSenhaView extends StatefulWidget {
-  const CriarSenhaView({super.key});
+  final String? senhaInicial;
+  const CriarSenhaView({super.key, this.senhaInicial});
 
   @override
   State<CriarSenhaView> createState() => _CriarSenhaViewState();
@@ -39,6 +40,9 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
   @override
   void initState() {
     super.initState();
+    if (widget.senhaInicial != null) {
+      _senhaController.text = widget.senhaInicial!;
+    }
     _avaliarSenha(_senhaController.text);
     _senhaController.addListener(() {
       _avaliarSenha(_senhaController.text);
