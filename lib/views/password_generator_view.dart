@@ -71,7 +71,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
     });
   }
 
-  void _salvarSenha() {
+  void _salvarSenha() async {
     if (_generatedPassword.isEmpty || _generatedPassword == "Selecione uma opção") {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gere uma senha válida antes de salvar')),
@@ -79,12 +79,20 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
       return;
     }
 
-    Navigator.push(
+    final resultado = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (context) => CriarSenhaView(senhaInicial: _generatedPassword),
       ),
     );
+
+    if (resultado == true && mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const Home(filtroInicial: 'Todos')),
+        (route) => false,
+      );
+    }
   }
 
   @override
