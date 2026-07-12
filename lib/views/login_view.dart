@@ -81,7 +81,7 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: SingleChildScrollView( // Novo Widget
           padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -164,7 +164,7 @@ class _LoginViewState extends State<LoginView> {
               const SizedBox(height: 24),
 
               // Link para ir para a tela de cadastro
-              GestureDetector(
+              GestureDetector( // Novo Widget
                 onTap: () {
                   // Abre a tela de cadastro
                   Navigator.push(
@@ -172,7 +172,7 @@ class _LoginViewState extends State<LoginView> {
                     MaterialPageRoute(builder: (context) => const RegisterView()),
                   );
                 },
-                child: RichText(
+                child: RichText( // Novo Widget
                   text: const TextSpan(
                     style: TextStyle(color: kryptonPurple, fontSize: 14),
                     children: [

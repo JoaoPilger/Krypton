@@ -301,7 +301,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   Row(
                     children: [
                       Text('Incluir letra maiúscula', style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
-                      const Spacer(), // Novo Widget
+                      const Spacer(),
                       Switch(
                         value: _includeUppercase,
                         activeThumbColor: Colors.white,
@@ -318,7 +318,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   Row(
                     children: [
                       Text('Incluir letra minúscula', style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
-                      const Spacer(), // Novo Widget
+                      const Spacer(),
                       Switch(
                         value: _includeLowercase,
                         activeThumbColor: Colors.white,
@@ -335,7 +335,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   Row(
                     children: [
                       Text('Incluir caracteres especiais', style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
-                      const Spacer(), // Novo Widget
+                      const Spacer(),
                       Switch(
                         value: _includeSpecial,
                         activeThumbColor: Colors.white,
@@ -352,7 +352,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   Row(
                     children: [
                       Text('Número de caracteres', style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
-                      const Spacer(), // Novo Widget
+                      const Spacer(),
                       Text(_passwordLength.round().toString(), style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
                     ],
                   ),
@@ -391,8 +391,8 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                       ),
                       child: Row(
                         children: [
-                          Expanded( // Novo Widget
-                            child: SingleChildScrollView( // Novo Widget
+                          Expanded(
+                            child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                                 child: Text(
                                 _generatedPassword,

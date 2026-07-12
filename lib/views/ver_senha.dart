@@ -167,7 +167,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         child: Column(
           children: [
-            Expanded(
+            Expanded( // Novo Widget
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
@@ -401,7 +401,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  ConstrainedBox(
+                  ConstrainedBox( // Novo Widget
                     constraints: const BoxConstraints(maxWidth: 500),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,7 +482,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: LinearProgressIndicator(
+                              child: LinearProgressIndicator( // Novo Widget
                                 value: _progressoSenha,
                                 backgroundColor: Colors.grey[300],
                                 color: _corForca,

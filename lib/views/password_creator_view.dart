@@ -329,7 +329,7 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              Expanded( // Novo Widget
+              Expanded(
                 child: ListView(
                   children: [
                     const SizedBox(height: 24),
@@ -432,7 +432,7 @@ class _CriarSenhaViewState extends State<CriarSenhaView> {
                                 style: TextStyle(fontSize: 12, color: _corForca, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(width: 8),
-                              Expanded( // Novo Widget
+                              Expanded(
                                 child: LinearProgressIndicator( // Novo Widget
                                   value: _progressoSenha,
                                   backgroundColor: Colors.grey[300],

@@ -73,7 +73,7 @@ class _HomeState extends State<Home> {
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         child: Column(
           children: [
-            Expanded(
+            Expanded( // Novo Widget
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [

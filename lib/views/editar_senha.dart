@@ -190,7 +190,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         child: Column(
           children: [
-            Expanded(
+            Expanded( // Novo Widget
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
@@ -343,7 +343,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                 child: ListView(
                   children: [
                     const SizedBox(height: 24),
-                    ConstrainedBox(
+                    ConstrainedBox( // Novo Widget
                       constraints: const BoxConstraints(maxWidth: 500),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,7 +443,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: LinearProgressIndicator(
+                                child: LinearProgressIndicator( // Novo Widget
                                   value: _progressoSenha,
                                   backgroundColor: Colors.grey[300],
                                   color: _corForca,
@@ -508,7 +508,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: colorPrimary),
                           ),
                           const SizedBox(height: 6),
-                          GestureDetector(
+                          GestureDetector( // Novo Widget
                             onTap: _selecionarImagem,
                             child: Container(
                               height: 120,
