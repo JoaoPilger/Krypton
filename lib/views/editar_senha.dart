@@ -8,6 +8,7 @@ import 'package:krypton/data/dao/senhaController.dart';
 import 'password_generator_view.dart';
 import 'package:krypton/main.dart';
 
+// Tela de edição de uma senha já cadastrada no cofre
 class EditarSenhaView extends StatefulWidget {
   final int id;
   final String titulo;
@@ -35,40 +36,55 @@ class EditarSenhaView extends StatefulWidget {
 class _EditarSenhaViewState extends State<EditarSenhaView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // Controladores dos campos de entrada de texto
   late final TextEditingController _tituloController;
   late final TextEditingController _usuarioController;
   late final TextEditingController _senhaController;
   late final TextEditingController _urlController;
+  
+  // Categorias disponíveis e categoria selecionada ativa
   static const List<String> _categorias = ['Redes Sociais', 'Bancos', 'Trabalhos', 'Outros'];
   late String _categoriaSelecionada;
 
+  // Variáveis para visibilidade e avaliação de força da senha
   bool _ocultarSenha = true;
   double _progressoSenha = 0.0;
   String _textoForca = 'Vazia';
   Color _corForca = Colors.grey;
 
+  // Arquivo de imagem para a capa do item
   File? _imagemCapa;
 
   @override
   void initState() {
     super.initState();
+    // Inicializa os campos com os valores atuais do registro de senha
+    // TextEditingController() - captura, lê e modifica o que o usuário digita em um campo de texto
     _tituloController = TextEditingController(text: widget.titulo);
     _usuarioController = TextEditingController(text: widget.usuario);
     _senhaController = TextEditingController(text: widget.senha);
     _urlController = TextEditingController(text: widget.url);
     _categoriaSelecionada = _categorias.contains(widget.tipo) ? widget.tipo : 'Outros';
+    
     if (widget.imagemPath != null) {
       _imagemCapa = File(widget.imagemPath!);
     }
+    
     _avaliarSenha(_senhaController.text);
+    // _senhaController.addListener() - escuta em tempo real e reage a cada alteração no campo de senha
+    // listener para recalcular a força conforme digita
     _senhaController.addListener(() {
       _avaliarSenha(_senhaController.text);
     });
   }
 
+  // Copia o texto informado para a área de transferência do celular
   void _copiarParaAreaTransferencia(String texto, String campo) {
     if (texto.isEmpty) return;
+    // Clipboard.setData() - envia um texto direto para a área de transferência
+    // ClipboardData() - objeto que carrega o texto que será enviado para a área de transferência
     Clipboard.setData(ClipboardData(text: texto));
+    // ScaffoldMessenger.of(context).showSnackBar() - barra de aviso rápida na parte de baixo da tela
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$campo copiado com sucesso!'),
@@ -77,13 +93,19 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
     );
   }
 
+  // Abre a galeria de fotos para escolher uma nova imagem de capa
   Future<void> _selecionarImagem() async {
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (picked == null) return;
 
+    // getApplicationDocumentsDirectory() - Localiza o caminho da pasta privada do sistema onde o app tem permissão para salvar arquivos locais
     final dir = await getApplicationDocumentsDirectory();
+    // DateTime.now().millisecondsSinceEpoch - Converte a data e hora atual para milissegundos gerando um nome de arquivo único
+    // p.extension() - Pega o caminho de um arquivo e extrai apenas a extensão dele
     final nomeArquivo = 'capa_${DateTime.now().millisecondsSinceEpoch}${p.extension(picked.path)}';
+    // File().copy() - Faz uma cópia exata do arquivo e a envia para a nova pasta
+    // p.join() - Junta nomes de pastas e arquivos criando um caminho de diretório correto
     final novoArquivo = await File(picked.path).copy(p.join(dir.path, nomeArquivo));
 
     setState(() {
@@ -91,6 +113,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
     });
   }
 
+  // Avalia a força da senha baseado no tamanho e na presença de caracteres variados
   void _avaliarSenha(String senha) {
     if (senha.isEmpty) {
       setState(() {
@@ -104,8 +127,11 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
     double pontos = 0.0;
     if (senha.length >= 6) pontos += 0.25;
     if (senha.length >= 10) pontos += 0.25;
+    // String.contains() - Verifica se um pedaço específico de texto existe dentro de um texto maior
+    // RegExp() - Cria uma Expressão Regular para buscar padrões de caracteres
     if (senha.contains(RegExp(r'[A-Z]'))) pontos += 0.25;
-    if (senha.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) pontos += 0.25;
+    // RegExp() - Verifica se há pelo menos um caractere especial na senha
+    if (senha.contains(RegExp(r'[!@#$%^&*(),.?":{}<>]'))) pontos += 0.25;
 
     setState(() {
       _progressoSenha = pontos == 0.0 ? 0.2 : pontos;
@@ -123,6 +149,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
     });
   }
 
+  // Valida e salva as alterações feitas no registro de senha
   Future<void> _submeterSalvar() async {
     if (_tituloController.text.trim().isEmpty || _usuarioController.text.trim().isEmpty || _senhaController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -131,6 +158,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
       return;
     }
 
+    // Chama o SenhaController para editar o registro existente criptografado
     bool sucesso = await SenhaController.editar(
       id: widget.id,
       titulo: _tituloController.text.trim(),
@@ -155,6 +183,8 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
 
   @override
   void dispose() {
+    // Desaloca controladores ao sair
+    // TextEditingController.dispose() - Destrói o controlador de texto para evitar desperdício e vazamento de memória
     _tituloController.dispose();
     _usuarioController.dispose();
     _senhaController.dispose();
@@ -176,10 +206,12 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
         iconTheme: const IconThemeData(size: 32),
         actions: [
           Padding(
+            // EdgeInsets.only() - configura valores de espaçamento apenas nos lados escolhidos
             padding: const EdgeInsets.only(right: 16),
             child: Image.asset(
               'lib/images/logo.png',
               height: 45,
+              // BoxFit.contain - Redimensiona a imagem para que ela caiba inteira no espaço disponível
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) => const SizedBox(),
             ),
@@ -523,6 +555,7 @@ class _EditarSenhaViewState extends State<EditarSenhaView> {
                                       borderRadius: BorderRadius.circular(11),
                                       child: Image.file(
                                         _imagemCapa!,
+                                        // BoxFit.cover: Aumenta e estica a imagem para preencher todo o espaço disponível, aceitando cortar as bordas
                                         fit: BoxFit.cover,
                                       ),
                                     )

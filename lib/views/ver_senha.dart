@@ -6,6 +6,7 @@ import 'password_generator_view.dart';
 import 'editar_senha.dart';
 import 'package:krypton/main.dart';
 
+// Tela de exibição detalhada de uma senha cadastrada
 class VisualizarSenhaView extends StatefulWidget {
   final int id;
   final String usuario;
@@ -33,14 +34,17 @@ class VisualizarSenhaView extends StatefulWidget {
 }
 
 class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
+  // Controladores somente leitura para exibir as informações nos campos correspondentes
   late final TextEditingController _usuarioController;
   late final TextEditingController _senhaController;
   late final TextEditingController _urlController;
   
+  // Controles de visibilidade, favorito e imagem de capa do item
   bool _ocultarSenha = true;
   int _esFavorito = 1;
   String? _imagemPath;
 
+  // Variáveis para indicação visual da força da senha exibida
   double _progressoSenha = 0.3;
   String _textoForca = 'Fraca';
   Color _corForca = Colors.red;
@@ -48,17 +52,23 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
   @override
   void initState() {
     super.initState();
+    // Inicializa as informações com os dados passados por parâmetro
     _esFavorito = widget.favorito;
     _imagemPath = widget.imagemPath;
+    // TextEditingController(): O objeto controlador que captura, lê e modifica tudo o que o usuário digita em um campo de texto
     _usuarioController = TextEditingController(text: widget.usuario);
     _senhaController = TextEditingController(text: widget.senha);
     _urlController = TextEditingController(text: widget.url);
 
     _avaliarSenha(_senhaController.text);
+    // Listener para reavaliar caso ocorra edição local
+    // _senhaController.addListener(): Registra uma função que fica escutando em tempo real e reage a cada alteração no campo de senha
     _senhaController.addListener(() {
       _avaliarSenha(_senhaController.text);
     });
 
+    // Busca o status atualizado de favorito no banco SQLite
+    // mounted: Propriedade de segurança que avisa se a tela ainda está ativa no app naquele exato segundo
     SenhaController.buscarFavorito(widget.id).then((val) {
       if (mounted) setState(() => _esFavorito = val);
     });
@@ -66,6 +76,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
 
   void _atualizarLista() {}
 
+  // Avalia a força da senha exibida para feedback visual na barra
   void _avaliarSenha(String senha) {
     if (senha.isEmpty) {
       setState(() {
@@ -80,8 +91,11 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
 
     if (senha.length >= 6) pontos += 0.25;
     if (senha.length >= 10) pontos += 0.25;
+    // String.contains(): Verifica se um pedaço específico de texto existe dentro de um texto maior
+    // RegExp(): Cria uma Expressão Regular para buscar padrões de caracteres (aqui verifica letras maiúsculas)
     if (senha.contains(RegExp(r'[A-Z]'))) pontos += 0.25;
-    if (senha.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) pontos += 0.25;
+    // RegExp(): Aqui verifica se há pelo menos um caractere especial na senha
+    if (senha.contains(RegExp(r'[!@#$%^&*(),.?":{}<>]'))) pontos += 0.25;
 
     setState(() {
       _progressoSenha = pontos == 0.0 ? 0.2 : pontos;
@@ -99,7 +113,9 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
     });
   }
 
+  // Abre caixa de diálogo de confirmação antes de excluir a senha
   void _confirmarExclusao() {
+    // showDialog(): Exibe uma janela flutuante de alerta (modal) bem no meio da tela, bloqueando o conteúdo que está atrás
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -108,6 +124,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
           content: const Text('Tem certeza que deseja excluir esta senha?'),
           actions: [
             TextButton(
+              // Navigator.pop(): Fecha a tela/diálogo atual e faz o usuário voltar para a tela anterior
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancelar'),
             ),
@@ -124,9 +141,13 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
     );
   }
 
+  // Copia o valor do campo correspondente para a área de transferência
   void _copiarParaAreaTransferencia(String texto, String campo) {
     if (texto.isEmpty) return;
+    // Clipboard.setData(): Envia um texto direto para a área de transferência do celular (faz a ação do 'Copiar')
+    // ClipboardData(): O objeto que envelopa e carrega o texto que você quer enviar para o Clipboard
     Clipboard.setData(ClipboardData(text: texto));
+    // ScaffoldMessenger.of(context).showSnackBar(): Faz brotar aquela pequena barra de aviso rápida na parte de baixo da tela
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$campo copiado com sucesso!'),
@@ -137,6 +158,8 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
 
   @override
   void dispose() {
+    // Desaloca controladores de texto da memória ao fechar a visualização
+    // TextEditingController.dispose(): Destrói o controlador de texto para evitar desperdício e vazamento de memória
     _usuarioController.dispose();
     _senhaController.dispose();
     _urlController.dispose();
@@ -153,10 +176,12 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
         iconTheme: const IconThemeData(size: 32),
         actions: [
           Padding(
+            // EdgeInsets.only(): Permite configurar valores de espaçamento apenas nos lados escolhidos
             padding: const EdgeInsets.only(right: 16.0),
             child: Image.asset(
               'lib/images/logo.png',
               height: 45,
+              // BoxFit.contain: Redimensiona a imagem para que ela caiba inteira no espaço disponível, sem cortar nada
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) => const SizedBox(),
             ),
@@ -326,13 +351,15 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
+                          // Exibe a imagem de capa customizada ou o ícone/logo padrão correspondente
                           SizedBox(
                             width: 40,
                             height: 40,
                             child: (_imagemPath != null && File(_imagemPath!).existsSync())
                                 ? ClipRRect(
                                     borderRadius: BorderRadius.circular(6),
-                                    child: Image.file(File(_imagemPath!), fit: BoxFit.cover),
+                      // Image.file() com BoxFit.cover: Estica a imagem para cobrir completamente o espaço do avatar, aceitando cortar bordas
+                                  child: Image.file(File(_imagemPath!), fit: BoxFit.cover),
                                   )
                                 : Image.asset(
                                     'lib/images/logo_$nomeImagem.png',
@@ -359,6 +386,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                               ],
                             ),
                           ),
+                          // Botão de Favorito (Estrela) para alternar o status
                           IconButton(
                             icon: Icon(
                               _esFavorito == 1 ? Icons.star : Icons.star_border,
@@ -370,10 +398,13 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                               if (ok) setState(() => _esFavorito = novoEstado);
                             },
                           ),
+                          // Botão de Editar para alterar os campos
                           IconButton(
                             icon: const Icon(Icons.edit, color: Color(0xFF3C3489)),
                             onPressed: () async {
-                              final resultado = await Navigator.push(
+                          // Navigator.push(): Coloca uma nova tela no topo da pilha, fazendo o usuário avançar para a tela de edição
+                          // MaterialPageRoute(): Gerencia as animações e transições visuais de troca de tela
+                          final resultado = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => EditarSenhaView(
@@ -392,6 +423,7 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
                               }
                             },
                           ),
+                          // Botão de Deletar/Excluir
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: _confirmarExclusao,

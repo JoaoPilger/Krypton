@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/DAO/userContoller.dart';
 import '../main.dart';
 
+// Tela de Cadastro de Usuário (Registro) no Krypton
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
 
@@ -10,26 +11,32 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
+  // Controladores de texto para capturar os dados informados no cadastro
   final _nameController            = TextEditingController();
   final _passwordController        = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  // Variável para armazenar se os termos e condições foram aceitos pelo usuário
   bool _acceptedTerms = false;
+  // Bloqueia cliques múltiplos enquanto o processo assíncrono de cadastro está rodando
   bool _carregando    = false; // bloqueia duplo clique
 
   @override
   void dispose() {
+    // Libera os controladores de texto da memória
     _nameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
+  // Tenta efetuar o cadastro do usuário com o nome e a senha informados
   Future<void> _cadastrar() async {
     if (_carregando) return;
     setState(() => _carregando = true);
 
     try {
+      // Chama o controlador para salvar o novo usuário mestre no banco
       final ok = await UserController.cadastrar(
         nome:         _nameController.text,
         senhaMestre:  _passwordController.text,
@@ -38,11 +45,13 @@ class _RegisterViewState extends State<RegisterView> {
       if (!context.mounted) return;
 
       if (ok) {
+        // Redireciona o usuário para a Home caso o cadastro seja bem-sucedido
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const Home()),
         );
       } else {
+        // Exibe mensagem em caso de falha de gravação ou banco
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Erro ao cadastrar. Tente novamente.')),
         );
@@ -68,19 +77,23 @@ class _RegisterViewState extends State<RegisterView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
+              // Imagem da Logo do app
               Image.asset('lib/images/logo.png', height: 120),
               const SizedBox(height: 50),
+              // Título
               const Text(
                 'Registro',
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600, color: kryptonPurple),
               ),
               const SizedBox(height: 16),
+              // Subtítulo descritivo
               const Text(
                 'Insira seus dados para se cadastrar',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: kryptonPurple),
               ),
               const SizedBox(height: 32),
+              // Campo para o nome do usuário
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -93,6 +106,7 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 16),
+              // Campo para digitar a senha mestre
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
@@ -106,6 +120,7 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 16),
+              // Campo de confirmação de senha
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: true,
@@ -119,6 +134,7 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 24),
+              // Opção de Checkbox para concordar com os termos de uso do app
               CheckboxListTile( // Novo Widget
                 value: _acceptedTerms,
                 onChanged: _carregando
@@ -133,6 +149,7 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 24),
+              // Botão para submeter o formulário de cadastro
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -156,6 +173,7 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 24),
+              // Link para navegar de volta ao Login
               GestureDetector( // Novo Widget
                 onTap: _carregando ? null : () => Navigator.pop(context),
                 child: RichText( // Novo Widget
@@ -169,6 +187,7 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 40),
+              // Rodapé simples de direitos autorais
               const Text(
                 'Todos os direitos reservados',
                 style: TextStyle(fontSize: 11, color: Colors.black45),
