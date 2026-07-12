@@ -116,7 +116,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         child: Column(
           children: [
-            Expanded(
+            Expanded( // Novo Widget
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
@@ -261,7 +261,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: SingleChildScrollView( // Novo Widget
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             child: DefaultTextStyle.merge(
@@ -284,7 +284,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   Row(
                     children: [
                       Text('Incluir números', style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
-                      const Spacer(),
+                      const Spacer(), // Novo Widget
                       Switch(
                         value: _includeNumbers,
                         activeThumbColor: Colors.white,
@@ -301,7 +301,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   Row(
                     children: [
                       Text('Incluir letra maiúscula', style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
-                      const Spacer(),
+                      const Spacer(), // Novo Widget
                       Switch(
                         value: _includeUppercase,
                         activeThumbColor: Colors.white,
@@ -318,7 +318,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   Row(
                     children: [
                       Text('Incluir letra minúscula', style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
-                      const Spacer(),
+                      const Spacer(), // Novo Widget
                       Switch(
                         value: _includeLowercase,
                         activeThumbColor: Colors.white,
@@ -335,7 +335,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   Row(
                     children: [
                       Text('Incluir caracteres especiais', style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
-                      const Spacer(),
+                      const Spacer(), // Novo Widget
                       Switch(
                         value: _includeSpecial,
                         activeThumbColor: Colors.white,
@@ -352,7 +352,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   Row(
                     children: [
                       Text('Número de caracteres', style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
-                      const Spacer(),
+                      const Spacer(), // Novo Widget
                       Text(_passwordLength.round().toString(), style: const TextStyle(fontFamily: 'Itim', color: Colors.grey, fontSize: 16)),
                     ],
                   ),
@@ -381,7 +381,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                   ),
                   const SizedBox(height: 32),
 
-                  ConstrainedBox(
+                  ConstrainedBox( // Novo Widget
                     constraints: const BoxConstraints(maxWidth: 500),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -391,8 +391,8 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
                       ),
                       child: Row(
                         children: [
-                          Expanded(
-                            child: SingleChildScrollView(
+                          Expanded( // Novo Widget
+                            child: SingleChildScrollView( // Novo Widget
                               scrollDirection: Axis.horizontal,
                                 child: Text(
                                 _generatedPassword,

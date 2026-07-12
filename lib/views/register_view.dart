@@ -62,7 +62,7 @@ class _RegisterViewState extends State<RegisterView> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: SingleChildScrollView( // Novo Widget
           padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,7 +119,7 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 24),
-              CheckboxListTile(
+              CheckboxListTile( // Novo Widget
                 value: _acceptedTerms,
                 onChanged: _carregando
                     ? null
@@ -156,9 +156,9 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 24),
-              GestureDetector(
+              GestureDetector( // Novo Widget
                 onTap: _carregando ? null : () => Navigator.pop(context),
-                child: RichText(
+                child: RichText( // Novo Widget
                   text: const TextSpan(
                     style: TextStyle(color: kryptonPurple, fontSize: 14),
                     children: [
