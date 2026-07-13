@@ -24,7 +24,7 @@ android {
         applicationId = "com.example.krypton"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 29
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -35,6 +35,16 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+    packaging {
+        resources {
+            // A app fornece seu próprio arquivo de serviço em src/main/resources com apenas
+            // DynamicLevelLoggingProvider. Com pickFirsts, recursos da APP têm prioridade
+            // sobre os das dependências — então esse arquivo sobrescreve o do tinylog-impl.
+            // As classes do tinylog-impl ainda são necessárias pois DynamicLevelLoggingProvider
+            // estende TinylogLoggingProvider.
+            pickFirsts += "META-INF/services/org.tinylog.provider.LoggingProvider"
         }
     }
 }

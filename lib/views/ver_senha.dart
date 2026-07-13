@@ -72,9 +72,6 @@ class _VisualizarSenhaViewState extends State<VisualizarSenhaView> {
     });
   }
 
-  void _atualizarLista() {}
-
-  // Avalia a força da senha
   void _avaliarSenha(String senha) {
     if (senha.isEmpty) {
       setState(() {

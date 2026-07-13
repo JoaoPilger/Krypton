@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Layout usado pelo RemoteViews na sugestão de autofill que aparece
+    no dropdown quando o usuário foca num campo de login.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="12dp"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@mipmap/launcher_icon"
+        android:contentDescription="Krypton" />
+
+    <TextView
+        android:id="@+id/autofill_item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:textSize="14sp"
+        android:textColor="#222222"
+        android:text="Desbloquear com Krypton" />
+
+</LinearLayout>

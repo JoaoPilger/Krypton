@@ -29,9 +29,6 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView> {
     _generatePassword();
   }
 
-  void _atualizarLista() {}
-
-  /// Método responsável por gerar uma senha aleatória com base nos critérios selecionados pelo usuário.
   void _generatePassword() {
     // Conjuntos de caracteres disponíveis para cada opção
     const String numbers = "0123456789";

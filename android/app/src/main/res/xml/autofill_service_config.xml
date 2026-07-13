@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Configuração do KryptonAutofillService.
+    Referenciado via meta-data "android.service.autofill" no AndroidManifest.xml.
+
+    compatibility-mode: false (usa o modo moderno de autofill).
+    packages-whitelist: não restringimos pacotes (preenche qualquer app).
+-->
+<autofill-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity=".MainActivity" />

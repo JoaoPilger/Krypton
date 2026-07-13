@@ -4,7 +4,9 @@ import 'views/password_generator_view.dart';
 import 'views/password_creator_view.dart';
 import 'views/login_view.dart';
 import 'views/ver_senha.dart';
-import 'package:krypton/data/dao/senhaController.dart';
+import 'views/autofill_view.dart';
+import 'views/configuracoes_view.dart';
+import 'package:krypton/data/DAO/senhaController.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
@@ -18,6 +20,36 @@ void main() async {
   ]);
 
   runApp(const MaterialApp(home: LoginView(), debugShowCheckedModeBanner: false));
+}
+
+@pragma('vm:entry-point')
+void autofillEntryPoint() async {
+  // 1. Captura erros de renderização e lógica que acontecem nesta thread isolada
+  FlutterError.onError = (FlutterErrorDetails details) {
+    debugPrint('!!! ERRO CRÍTICO NO AUTOFILL: ${details.exception}');
+    debugPrint('!!! STACK TRACE: ${details.stack}');
+  };
+
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+
+    // O banco é inicializado APÓS autenticação do usuário.
+    // O entry point de autofill apenas sobe a UI de autenticação;
+    // KeystoreService.loginBIO() e loginPIN() chamam DbService.init()
+    // com a chave descriptografada depois que o usuário se autentica.
+
+    runApp(const MaterialApp(
+      home: AutofillAuthView(),
+      debugShowCheckedModeBanner: false,
+    ));
+  } catch (e, stack) {
+    debugPrint('!!! FALHA NO PROCESSO DE INICIALIZAÇÃO DO AUTOFILL: $e');
+    debugPrint('$stack');
+  }
 }
 
 class Home extends StatefulWidget {
@@ -229,7 +261,13 @@ class _HomeState extends State<Home> {
               title: const Text('Configurações'),
               iconColor: const Color.fromARGB(255, 102, 100, 117),
               textColor: const Color.fromARGB(255, 102, 100, 117),
-              onTap: () => Navigator.pop(context),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ConfiguracoesView()),
+                );
+              },
             ),
           ],
         ),
