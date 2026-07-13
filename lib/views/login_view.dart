@@ -13,7 +13,6 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   // Controlador para pegar o texto que o usuário digita no campo de senha
-  // TextEditingController - controla  e lê o que foi digitado no campo
   final _passwordController = TextEditingController();
   // Variável para indicar se o login está carregando
   bool _isLoading = false;
@@ -21,17 +20,14 @@ class _LoginViewState extends State<LoginView> {
   @override
   void dispose() {
     // Limpa o controlador quando a tela for fechada
-    // .dispose() - libera o controlador da memória ao fechar a tela
     _passwordController.dispose();
     super.dispose();
   }
 
   // Redireciona o usuário para a tela Home principal
   void _goHome() {
-    // pushReplacement - vai pra Home e fecha a tela de login (usuário não volta pra cá)
     Navigator.pushReplacement(
       context,
-      // MaterialPageRoute - define a animação de transição entre telas
       MaterialPageRoute(builder: (context) => const Home()),
     );
   }
@@ -51,7 +47,7 @@ class _LoginViewState extends State<LoginView> {
     if (ok) {
       _goHome(); // Se a senha estiver correta, vai para a Home
     } else {
-      // showSnackBar - mostra a barrinha de erro na parte de baixo da tela
+      // Mostra a barrinha de erro na parte de baixo da tela
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Senha incorreta. Tente novamente.'),
@@ -75,7 +71,7 @@ class _LoginViewState extends State<LoginView> {
     if (ok) {
       _goHome(); // Se a autenticação biométrica funcionar, vai para a Home
     } else {
-      // showSnackBar - mostra a barrinha de aviso de falha biométrica
+      // Mostra a barrinha de aviso de falha biométrica
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Autenticação biométrica falhou. Use sua senha.'),
@@ -87,7 +83,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    // Cor roxa principal do aplicativo Krypton
     const Color kryptonPurple = Color(0xFF3F3D8A);
 
     return Scaffold(
@@ -100,7 +95,6 @@ class _LoginViewState extends State<LoginView> {
             children: [
               const SizedBox(height: 20),
 
-              // Exibe o logo do aplicativo
               Image.asset(
                 'lib/images/logo.png',
                 height: 120,
@@ -108,7 +102,6 @@ class _LoginViewState extends State<LoginView> {
 
               const SizedBox(height: 50),
 
-              // Título de Login
               const Text(
                 'Login',
                 style: TextStyle(
@@ -120,7 +113,6 @@ class _LoginViewState extends State<LoginView> {
 
               const SizedBox(height: 16),
 
-              // Mensagem instrutiva
               const Text(
                 'Digite sua senha ou impressão digital para fazer login',
                 textAlign: TextAlign.center,
@@ -132,20 +124,18 @@ class _LoginViewState extends State<LoginView> {
 
               const SizedBox(height: 32),
 
-              // Campo de entrada para digitar a senha
               TextFormField(
                 controller: _passwordController,
-                obscureText: true, // Oculta o texto digitado
+                obscureText: true,
                 decoration: InputDecoration(
                   hintText: 'Senha',
                   hintStyle: const TextStyle(color: Colors.black38),
                   filled: true,
                   fillColor: const Color(0xFFDBDBE7),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  // OutlineInputBorder - borda ao redor do campo de texto
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    // BorderSide.none - remove a linha de borda visível
+                    // Remove a linha de borda visível
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -161,10 +151,8 @@ class _LoginViewState extends State<LoginView> {
                   onPressed: () async{
                     _loginPIN();
                   },
-                  // FilledButton.styleFrom - estiliza o botão preenchido
                   style: FilledButton.styleFrom(
                     backgroundColor: kryptonPurple,
-                    // RoundedRectangleBorder - bordas arredondadas
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -181,14 +169,13 @@ class _LoginViewState extends State<LoginView> {
               // Abre a tela de cadastro ao clicar no link
               GestureDetector(
                 onTap: () {
-                  // Navigator.push - abre a tela de cadastro por cima
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const RegisterView()),
                   );
                 },
                 child: RichText(
-                  // TextSpan - permite estilizar trechos diferentes dentro do mesmo texto
+                  // Permite estilizar trechos diferentes dentro do mesmo texto
                   text: const TextSpan(
                     style: TextStyle(color: kryptonPurple, fontSize: 14),
                     children: [
@@ -204,7 +191,7 @@ class _LoginViewState extends State<LoginView> {
 
               const SizedBox(height: 40),
 
-              // Área clicável para login por biometria (impressão digital)
+              // Área clicável para login por biometria
               GestureDetector(
                 onTap: _isLoading ? null : _loginBIO,
                 child: Column(
@@ -232,7 +219,6 @@ class _LoginViewState extends State<LoginView> {
 
               const SizedBox(height: 30),
 
-              // Rodapé simples de direitos autorais
               const Text(
                 'Todos os direitos reservados',
                 style: TextStyle(

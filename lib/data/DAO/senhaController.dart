@@ -6,9 +6,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../database/db.dart';
 import '../models/senhas.dart';
 
-// Controlador para gerenciar as operações de banco de dados e criptografia de senhas
+// Controlador para gerenciar as operações de banco e criptografia de senhas
 class SenhaController {
-  // FlutterSecureStorage - armazena dados no cofre criptografado do celular
+  // Armazena dados no cofre criptografado do celular
   static const _storage    = FlutterSecureStorage();
   static const _dbKeyAlias = 'db_key';
   // AesGcm.with256bits - configura a criptografia AES no modo GCM com chave de 256 bits
@@ -30,7 +30,7 @@ class SenhaController {
     return SecretKey(base64Decode(padded));
   }
 
-  // Criptografa a senha plano usando AES-GCM e a insere no banco de dados SQLite
+  // Criptografa a senha plano usando AES-GCM e a insere no banco
   static Future<bool> salvar({
     required int    userID,
     required String titulo,
@@ -214,7 +214,7 @@ class SenhaController {
     }
   }
 
-  // Atualiza o status de favorito (0 ou 1) de um registro no banco de dados
+  // Atualiza o status de favorito (0 ou 1) de um registro no banco
   static Future<bool> favoritar(int id, {required bool favorito}) async {
     final updated = await DbService.db.update(
       'senhas',
@@ -237,10 +237,10 @@ class SenhaController {
     return (rows.first['favorito'] as int? ?? 0);
   }
 
-  // Exclui um registro de senha do banco SQLite por ID
+  // Exclui um registro de senha do banco por ID
   static Future<bool> deletar(int id) async {
     try {
-      // db.delete - apaga o registro do banco pelo id
+      // Apaga o registro do banco pelo id
       final deleted = await DbService.db.delete('senhas', where: 'id = ?', whereArgs: [id]);
       return deleted > 0;
     } catch (e) {

@@ -18,7 +18,6 @@ class _RegisterViewState extends State<RegisterView> {
 
   // Variável para armazenar se os termos e condições foram aceitos pelo usuário
   bool _acceptedTerms = false;
-  // Bloqueia cliques múltiplos enquanto o processo assíncrono de cadastro está rodando
   bool _carregando    = false; // bloqueia duplo clique
 
   @override
@@ -65,7 +64,7 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     const Color kryptonPurple = Color(0xFF3F3D8A);
 
-    // Botão ativo só se aceitou termos E não está carregando
+    // Botão ativo só se aceitou termos e não está carregando
     final bool botaoAtivo = _acceptedTerms && !_carregando;
 
     return Scaffold(
@@ -77,16 +76,13 @@ class _RegisterViewState extends State<RegisterView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              // Imagem da Logo do app
               Image.asset('lib/images/logo.png', height: 120),
               const SizedBox(height: 50),
-              // Título
               const Text(
                 'Registro',
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600, color: kryptonPurple),
               ),
               const SizedBox(height: 16),
-              // Subtítulo descritivo
               const Text(
                 'Insira seus dados para se cadastrar',
                 textAlign: TextAlign.center,
@@ -106,7 +102,7 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Campo para digitar a senha mestre
+              // Campo para digitar a senha
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
@@ -187,7 +183,6 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
               ),
               const SizedBox(height: 40),
-              // Rodapé simples de direitos autorais
               const Text(
                 'Todos os direitos reservados',
                 style: TextStyle(fontSize: 11, color: Colors.black45),

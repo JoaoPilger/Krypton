@@ -7,24 +7,19 @@ import 'views/ver_senha.dart';
 import 'package:krypton/data/dao/senhaController.dart';
 import 'package:flutter/services.dart';
 
-/// Ponto de entrada do aplicativo.
 void main() async {
-  // Garante a inicialização correta das bindings do Flutter antes de rodar qualquer código assíncrono
-  // WidgetsFlutterBinding.ensureInitialized(): Garante que o motor do Flutter esteja conectado e pronto para falar com o sistema operacional antes de rodar códigos nativos
+  // Garante que o Flutter esteja conectado e pronto para falar com o sistema operacional antes de rodar códigos nativos
   WidgetsFlutterBinding.ensureInitialized();
 
-  // SystemChrome.setPreferredOrientations(): Define e trava quais orientações a tela do aplicativo pode ter
+  // Define e trava quais orientações a tela do aplicativo pode ter
   await SystemChrome.setPreferredOrientations([
-    // DeviceOrientation.portraitUp: A configuração que diz que a tela deve ficar na posição vertical padrão (em pé)
+    // Para a tela ficar na posição vertical padrão (em pé)
     DeviceOrientation.portraitUp,
   ]);
 
-  // Inicializa o aplicativo abrindo a tela de Login
   runApp(const MaterialApp(home: LoginView(), debugShowCheckedModeBanner: false));
 }
 
-/// Widget Stateful que representa a tela principal do aplicativo (Home).
-/// Permite visualizar, pesquisar e gerenciar a lista de senhas salvas.
 class Home extends StatefulWidget {
   // Filtro inicial para definir quais senhas serão mostradas ao abrir a tela (padrão é 'Todos')
   final String filtroInicial;
@@ -39,9 +34,9 @@ class _HomeState extends State<Home> {
   int constLogadoUserID = 1;
   // Termo digitado pelo usuário na barra de buscas
   String _termoBusca = '';
-  // Filtro selecionado atualmente (ex: 'Todos', 'Favoritos', 'Redes Sociais')
+  // Filtro atual
   late String _filtroAtivo; 
-  // Future que armazena a lista de senhas que está sendo buscada assincronamente do banco de dados
+  // Future que armazena a lista de senhas que está sendo buscada no banco
   late Future<List<Map<String, dynamic>>> _senhasFuture;
 
   @override
@@ -53,7 +48,7 @@ class _HomeState extends State<Home> {
     _senhasFuture = SenhaController.buscarTodas(constLogadoUserID);
   }
 
-  /// Recarrega as senhas do banco de dados e atualiza o estado da tela principal.
+  /// Recarrega as senhas do banco e atualiza o estado da tela principal.
   void _atualizarLista() {
     setState(() {
       _senhasFuture = SenhaController.buscarTodas(constLogadoUserID);
@@ -63,32 +58,29 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Barra superior do aplicativo
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu, size: 32),
-            // Abre o menu lateral (Drawer)
+            // Abre o menu lateral (Drawer uns do novos widgets)
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
         actions: [
-          // Logo do aplicativo posicionada à direita na barra superior
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Image.asset(
               'lib/images/logo.png',
               height: 45,
-              // BoxFit.contain: Redimensiona a imagem para que ela caiba inteira no espaço disponível, sem cortar nada
+              // Redimensiona a imagem para que ela caiba inteira no espaço disponível, sem cortar nada
             fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) => const SizedBox(),
             ),
           ),
         ],
       ),
-      // Menu lateral para navegação e filtragem por categorias
-      drawer: Drawer(
+      drawer: Drawer( // Novo widget
         backgroundColor: const Color.fromARGB(255, 216, 216, 224),
         child: Column(
           children: [
@@ -108,7 +100,6 @@ class _HomeState extends State<Home> {
                           child: Image.asset(
                             'lib/images/logo.png',
                             height: 80,
-                            // BoxFit.contain: Redimensiona a imagem para que ela caiba inteira no espaço disponível, sem cortar nada
                             fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) => const Icon(Icons.lock, size: 50),
                           ),
@@ -126,13 +117,12 @@ class _HomeState extends State<Home> {
                                 MaterialPageRoute(builder: (context) => const PasswordGeneratorView())
                               );
                             },
-                            // ElevatedButton.styleFrom(): Função utilitária para mudar o visual do botão
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(255, 60, 52, 137),
                               foregroundColor: Colors.white,
-                              // RoundedRectangleBorder(): Define uma forma geométrica de retângulo com cantos arredondados para o botão
+                              // Define uma forma geométrica de retângulo com cantos arredondados para o botão
                               shape: RoundedRectangleBorder(
-                                // BorderRadius.circular(): Define um raio para deixar os cantos arredondados de forma simétrica
+                                // Define um raio para deixar os cantos arredondados de forma simétrica
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
@@ -233,7 +223,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             const Divider(color: Color.fromARGB(40, 0, 0, 0), height: 1),
-            // Item de configurações (fechar menu por ora)
+            // Item de configurações
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Configurações'),
@@ -244,7 +234,6 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      // Conteúdo da Tela Principal
       body: Column(
         children: [
           Expanded(
@@ -252,24 +241,23 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  // Campo de texto de busca para encontrar senhas por título ou usuário
+                  // Busca para encontrar senhas por título ou usuário
                   TextField(
                     onChanged: (value) {
                       setState(() {
                         _termoBusca = value;
                       });
                     },
-                    // InputDecoration(): Controla toda a estética visual de um campo de entrada de texto (coloca ícones, textos de dica, rótulos, etc.)
                     decoration: InputDecoration(
                       hintText: 'Buscar Senhas',
                       hintStyle: const TextStyle(color: Color(0xFF666475)),
                       prefixIcon: const Icon(Icons.search, color: Color.fromARGB(255, 60, 52, 137)),
                       filled: true,
                       fillColor: const Color.fromARGB(255, 216, 216, 224),
-                      // OutlineInputBorder(): Desenha aquela borda em formato de linha que contorna completamente toda a volta do campo de texto
+                      // Desenha aquela borda em formato de linha que contorna completamente toda a volta do campo de texto
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        // BorderSide.none: Define que o elemento não terá nenhuma linha de borda visível
+                        // Define que o elemento não terá nenhuma linha de borda visível
                         borderSide: BorderSide.none,
                       ),
                     ),
@@ -296,9 +284,8 @@ class _HomeState extends State<Home> {
                           final titulo = item['titulo']?.toString().toLowerCase() ?? '';
                           final usuario = item['usuario']?.toString().toLowerCase() ?? '';
                           final busca = _termoBusca.toLowerCase();
-                          // Verifica se o texto de busca bate com título ou usuário
-                        // String.toLowerCase(): Transforma todas as letras de um texto em minúsculas
-                        // String.contains(): Verifica se um pedaço específico de texto existe dentro de um texto maior
+                        // Transforma todas as letras de um texto em minúsculas
+
                         final bateTexto = titulo.contains(busca) || usuario.contains(busca);
                         if (!bateTexto) return false;
 
@@ -312,7 +299,7 @@ class _HomeState extends State<Home> {
                         }
                       }).toList();
 
-                        // Caso a busca ou filtro não retornem resultados
+                        // Caso a busca ou filtro não retorne resultados
                         if (listaFiltrada.isEmpty) {
                           return const Center(child: Text('Nenhuma senha encontrada.'));
                         }
@@ -336,7 +323,7 @@ class _HomeState extends State<Home> {
                                           File(imagemPath),
                                           width: 40,
                                           height: 40,
-                                          // BoxFit.cover: Aumenta e estica a imagem para preencher todo o espaço disponível, aceitando cortar as bordas
+                                          // Aumenta e estica a imagem para preencher todo o espaço disponível, aceitando cortar as bordas
                                           fit: BoxFit.cover,
                                         ),
                                       )
@@ -396,7 +383,7 @@ class _HomeState extends State<Home> {
                           _atualizarLista();
                         }
                       },
-                      // ElevatedButton.styleFrom(): Atalho para criar um estilo de botão de forma simples
+                      // Atalho para criar um estilo de botão de forma simples
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 60, 52, 137),
                         foregroundColor: Colors.white,
@@ -414,8 +401,7 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          // Rodapé simples de copyright
-          // EdgeInsets.symmetric(): Cria espaçamentos iguais nos lados verticais ou horizontais
+          // Cria espaçamentos iguais nos lados verticais ou horizontais
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: Text(
