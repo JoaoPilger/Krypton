@@ -18,30 +18,30 @@
 
 ---
 
-## 📋 Sobre o Projeto
+## Sobre o Projeto
 
 O **Krypton** é um aplicativo mobile de gerenciamento de senhas que armazena todas as credenciais **localmente** no dispositivo do usuário, sem depender de servidores externos ou nuvem. Todas as senhas são criptografadas com **AES-256-GCM** antes de serem persistidas em um banco de dados **SQLite criptografado com SQLCipher**, garantindo segurança de ponta a ponta mesmo em caso de acesso físico ao dispositivo.
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 | Funcionalidade | Descrição |
 |---|---|
-| 🔐 **Autenticação dupla** | Login via **senha mestre (PIN)** ou **biometria** (impressão digital / reconhecimento facial) |
-| 🔑 **Gerador de senhas** | Gerador configurável com opções de comprimento, letras maiúsculas/minúsculas, números e caracteres especiais |
-| 📂 **Categorias** | Organização por categorias: *Redes Sociais*, *Bancos*, *Trabalhos* e *Outros* |
-| ⭐ **Favoritos** | Marque senhas como favoritas para acesso rápido |
-| 🔍 **Busca** | Busca por título ou nome de usuário em tempo real |
-| 📋 **CRUD completo** | Criar, visualizar, editar e excluir senhas salvas |
-| 🖼️ **Imagem personalizada** | Associe uma imagem customizada a cada credencial |
-| 🤖 **Autofill nativo (Android)** | Serviço de autopreenchimento integrado ao sistema Android, preenchendo senhas em outros apps e navegadores |
-| ⚙️ **Configurações** | Tela de configurações para ativar/desativar o serviço de autofill do sistema |
-| 🔒 **100% Offline** | Nenhum dado sai do dispositivo — armazenamento totalmente local |
+| **Autenticação dupla** | Login via **senha mestre (PIN)** ou **biometria** (impressão digital / reconhecimento facial) |
+| **Gerador de senhas** | Gerador configurável com opções de comprimento, letras maiúsculas/minúsculas, números e caracteres especiais |
+| **Categorias** | Organização por categorias: *Redes Sociais*, *Bancos*, *Trabalhos* e *Outros* |
+| **Favoritos** | Marque senhas como favoritas para acesso rápido |
+| **Busca** | Busca por título ou nome de usuário em tempo real |
+| **CRUD completo** | Criar, visualizar, editar e excluir senhas salvas |
+| **Imagem personalizada** | Associe uma imagem customizada a cada credencial |
+| **Autofill nativo (Android)** | Serviço de autopreenchimento integrado ao sistema Android, preenchendo senhas em outros apps e navegadores |
+| **Configurações** | Tela de configurações para ativar/desativar o serviço de autofill do sistema |
+| **100% Offline** | Nenhum dado sai do dispositivo — armazenamento totalmente local |
 
 ---
 
-## 🏗️ Arquitetura de Segurança
+## Arquitetura de Segurança
 
 O Krypton implementa uma arquitetura criptográfica em múltiplas camadas:
 
@@ -117,7 +117,7 @@ O Krypton implementa uma arquitetura criptográfica em múltiplas camadas:
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 lib/
@@ -151,7 +151,7 @@ lib/
 
 ---
 
-## 🚀 Como Executar
+## Como Executar
 
 ### Pré-requisitos
 
@@ -185,7 +185,7 @@ flutter build appbundle --release
 
 ---
 
-## 📱 Telas do Aplicativo
+## Telas do Aplicativo
 
 | Tela | Descrição |
 |---|---|
@@ -200,12 +200,12 @@ flutter build appbundle --release
 
 ---
 
-## 👥 Autores
+## Autores
 
 Projeto desenvolvido como trabalho acadêmico da disciplina **DSDM** — **3ª Fase**.
 
 ---
 
-## 📄 Licença
+## Licença
 
 Este projeto é de uso acadêmico. Todos os direitos reservados.
